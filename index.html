@@ -18,7 +18,7 @@
     body { background-color: #030712; color: #f8fafc; overflow: hidden; }
     #webcam { display: none; }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -35,126 +35,142 @@
     <!-- Canvas เกมหลัก -->
     <canvas id="gameCanvas" width="540" height="960" class="absolute inset-0 w-full h-full z-10"></canvas>
 
-    <!-- Mute / Unmute Floating Sound Button (แสดงเฉพาะหน้า UI ปิดขณะเล่นเกม) -->
-    <button id="toggleAudioBtn" onclick="toggleMuteSound(event)" class="absolute top-2.5 right-3 z-30 bg-slate-800/80 hover:bg-slate-700 border border-slate-600/60 p-2 rounded-full text-base text-yellow-400 shadow-lg transition-transform active:scale-95">
+    <!-- Mute / Unmute Floating Sound Button -->
+    <button id="toggleAudioBtn" onclick="toggleMuteSound(event)" class="absolute top-3 right-3 z-30 bg-slate-800/90 hover:bg-slate-700 border border-slate-600 p-2 rounded-full text-base text-yellow-400 shadow-xl transition-transform active:scale-95">
       🔊
     </button>
 
-    <!-- Overlay UI Screen (จัดการแสดงผลทุกหน้า) -->
-    <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-between p-4 pt-3 glass-panel transition-all duration-300">
+    <!-- Overlay UI Screen (ขยายเต็มหน้าจอ 100%) -->
+    <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col justify-between p-5 pt-4 glass-panel transition-all duration-300">
       
-      <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard) -->
-      <div id="landingScreen" class="w-full flex flex-col items-center space-y-2.5 text-center my-auto">
+      <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard - เต็มจอชิดขอบบน) -->
+      <div id="landingScreen" class="w-full h-full flex flex-col justify-between items-center text-center py-2">
         
-        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold tracking-wider">
-          กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+        <!-- Header Top Bar -->
+        <div class="w-full flex flex-col items-center space-y-1 mt-1">
+          <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
+            กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+          </div>
+          <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow">
+            เกมสำรวจสายทางดิจิทัล
+          </h1>
+          <p class="text-slate-400 text-xs">ระบบตรวจสอบและรายงานสภาพสายทางดิจิทัล</p>
         </div>
-        
-        <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow leading-tight">
-          เกมสำรวจสายทางดิจิทัล
-        </h1>
-        <p class="text-slate-400 text-[11px] -mt-1">ระบบตรวจสอบและรายงานสภาพสายทาง อบต.ท่าก๊อ</p>
 
-        <!-- ตาราง TOP 5 LEADERBOARD -->
-        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-left shadow-2xl space-y-2">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-yellow-400 flex items-center gap-1">
+        <!-- ตาราง TOP 5 LEADERBOARD (ขยายเต็มพื้นที่กลางจอ) -->
+        <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-left shadow-2xl space-y-3 my-auto flex-1 flex flex-col justify-center max-h-[500px]">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 class="text-sm font-bold text-yellow-400 flex items-center gap-1.5">
               <span>🏆 5 อันดับสูงสุด</span>
             </h3>
-            <span id="totalPlayersBadge" class="text-[10px] text-slate-500 font-medium">ผู้เล่นทั้งหมด 0 คน</span>
+            <span id="totalPlayersBadge" class="text-xs text-slate-400 font-medium">ผู้เล่นทั้งหมด 0 คน</span>
           </div>
 
+          <!-- ช่องค้นหาชื่อผู้เล่น -->
           <div class="relative">
             <input type="text" id="searchPlayerInput" oninput="filterLeaderboard()" placeholder="🔍 ค้นหาชื่อผู้เล่น..." 
-                   class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg pl-3 pr-8 py-1.5 focus:ring-yellow-400 focus:border-yellow-400">
+                   class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl pl-3 pr-8 py-2.5 focus:ring-yellow-400 focus:border-yellow-400">
           </div>
 
-          <div id="landingLeaderboardList" class="space-y-1.5 max-h-64 overflow-y-auto pr-1 text-xs min-h-[180px]">
-            <div class="text-slate-500 italic text-center py-8">กำลังดึงตารางคะแนน...</div>
+          <!-- รายการตารางคะแนน -->
+          <div id="landingLeaderboardList" class="space-y-2 overflow-y-auto pr-1 text-xs flex-1 max-h-[320px]">
+            <div class="text-slate-500 italic text-center py-10">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <button onclick="goToSetupScreen()" 
-                class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3 px-6 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
-          <span>🚀 ลงทะเบียนเข้าเล่นเกม</span>
-        </button>
+        <!-- ปุ่มเริ่มเล่นเกม (ติดขอบล่างเด่นชัด) -->
+        <div class="w-full max-w-sm pb-2">
+          <button onclick="goToSetupScreen()" 
+                  class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-lg py-3.5 px-6 rounded-2xl shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
+            <span>🚀 ลงทะเบียนเข้าเล่นเกม</span>
+          </button>
+        </div>
       </div>
 
 
       <!-- SCREEN 2: หน้าลงทะเบียน & เช็กกล้อง -->
-      <div id="setupScreen" class="w-full flex flex-col items-center space-y-2.5 text-center hidden my-auto">
-        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold">
-          กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+      <div id="setupScreen" class="w-full h-full flex flex-col justify-between items-center text-center hidden py-2">
+        <div class="w-full flex flex-col items-center space-y-1 mt-1">
+          <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold">
+            กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+          </div>
+          <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
         </div>
 
-        <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
-
-        <div class="relative w-56 h-40 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center">
-          <canvas id="previewCanvas" width="224" height="160" class="w-full h-full object-cover transform -scale-x-100"></canvas>
-          <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
+        <!-- จอลองกล้อง Preview -->
+        <div class="relative w-64 h-48 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-auto">
+          <canvas id="previewCanvas" width="256" height="192" class="w-full h-full object-cover transform -scale-x-100"></canvas>
+          <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2.5 py-1 rounded-md text-xs text-yellow-400 font-medium">
             ⏳ กำลังเชื่อมต่อกล้อง...
           </div>
         </div>
 
-        <div class="w-full max-w-xs text-left">
-          <label class="text-[11px] text-slate-300 mb-0.5 block">🎥 เลือกกล้องที่ใช้งาน:</label>
-          <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2 focus:ring-yellow-400">
-            <option value="">กำลังค้นหากล้อง...</option>
-          </select>
-        </div>
+        <div class="w-full max-w-sm space-y-3 mb-2">
+          <div class="text-left">
+            <label class="text-xs text-slate-300 mb-1 block">🎥 เลือกกล้องที่ใช้งาน:</label>
+            <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-xl p-2.5 focus:ring-yellow-400">
+              <option value="">กำลังค้นหากล้อง...</option>
+            </select>
+          </div>
 
-        <div class="w-full max-w-xs text-left">
-          <label class="text-[11px] text-slate-300 mb-0.5 block">👤 ชื่อผู้เล่น:</label>
-          <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
-                 class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2 focus:ring-yellow-400 text-center">
-        </div>
+          <div class="text-left">
+            <label class="text-xs text-slate-300 mb-1 block">👤 ชื่อผู้เล่น:</label>
+            <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
+                   class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-xl p-2.5 focus:ring-yellow-400 text-center">
+          </div>
 
-        <div class="flex gap-2 w-full max-w-xs pt-1">
-          <button onclick="goToLandingScreen()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs">
-            ⬅️ ย้อนกลับ
-          </button>
-          <button id="btnStartGame" onclick="confirmAndStartGame()" 
-                  class="w-2/3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>📸 ถ่ายรูป & เริ่มเล่น</span>
-          </button>
+          <div class="flex gap-2 pt-1">
+            <button onclick="goToLandingScreen()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl text-xs">
+              ⬅️ ย้อนกลับ
+            </button>
+            <button id="btnStartGame" onclick="confirmAndStartGame()" 
+                    class="w-2/3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-sm py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1">
+              <span>📸 ถ่ายรูป & เริ่มเล่น</span>
+            </button>
+          </div>
         </div>
       </div>
 
 
-      <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver) -->
-      <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-2.5 text-center my-auto relative">
+      <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver - เต็มจอขยายใหญ่) -->
+      <div id="gameOverScreen" class="w-full h-full flex flex-col justify-between items-center text-center hidden py-2 relative">
         
-        <button onclick="openAdminModal()" class="absolute -top-3 -right-1 w-8 h-8 opacity-20 hover:opacity-100 flex items-center justify-center text-slate-400 text-xs">
+        <button onclick="openAdminModal()" class="absolute top-0 right-0 w-8 h-8 opacity-20 hover:opacity-100 flex items-center justify-center text-slate-400 text-xs">
           ⚙️
         </button>
 
-        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold">
-          กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
-        </div>
-
-        <h2 class="text-xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
-        
-        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3 w-full max-w-xs flex items-center justify-between shadow-xl">
-          <div class="text-left">
-            <div id="resultPlayerName" class="font-bold text-slate-200 text-xs">ผู้เล่น: -</div>
-            <div id="resultScore" class="text-lg font-black text-yellow-400">0 คะแนน</div>
+        <div class="w-full flex flex-col items-center space-y-1 mt-1">
+          <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold">
+            กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
           </div>
-          <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
+          <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
         </div>
 
-        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-2.5 text-left shadow-inner">
-          <h3 class="text-xs font-bold text-yellow-400 mb-1.5 flex items-center justify-between">
+        <!-- การ์ดแสดงผลผู้เล่น + รูปถ่ายหน้าจริง -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 w-full max-w-sm flex items-center justify-between shadow-2xl my-2">
+          <div class="text-left">
+            <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">ผู้เล่น: -</div>
+            <div id="resultScore" class="text-xl font-black text-yellow-400">0 คะแนน</div>
+          </div>
+          <img id="resultPlayerImg" class="w-14 h-14 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
+        </div>
+
+        <!-- ตาราง TOP 5 LEADERBOARD สรุป -->
+        <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-left shadow-inner flex-1 flex flex-col justify-center max-h-[400px]">
+          <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between border-b border-slate-800 pb-1.5">
             <span>🏆 5 อันดับสูงสุดล่าสุด</span>
           </h3>
-          <div id="gameOverLeaderboardList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs min-h-[140px]">
-            <div class="text-slate-500 italic text-center py-4">กำลังดึงตารางคะแนน...</div>
+          <div id="gameOverLeaderboardList" class="space-y-2 overflow-y-auto pr-1 text-xs flex-1 max-h-[280px]">
+            <div class="text-slate-500 italic text-center py-6">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <button onclick="goToLandingScreen()" 
-                class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95 shadow-md">
-          🏠 กลับหน้าหลัก / หน้าตารางคะแนน
-        </button>
+        <div class="w-full max-w-sm pb-2 mt-2">
+          <button onclick="goToLandingScreen()" 
+                  class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-2xl text-xs transition-all active:scale-95 shadow-lg">
+            🏠 กลับหน้าหลัก / หน้าตารางคะแนน
+          </button>
+        </div>
       </div>
 
     </div>
@@ -185,18 +201,22 @@
 
     const ADMIN_PASSWORD = "1234";
 
-    // --- AUDIO SYSTEM ---
+    // --- AUDIO SYSTEM (UPDATED DIRECT MP3 CDN) ---
+    // ช่วงที่ 1: Lofi Chill Lounge (หน้าแรก / เช็กกล้อง / สรุปผล)
     const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
-    const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_51a37c56d2.mp3?filename=fast-drum-and-bass-112192.mp3");
     
+    // ช่วงที่ 2: Upbeat Action Synthwave (ระหว่างเล่นเกม 60s)
+    const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a70514.mp3?filename=retro-arcade-game-116087.mp3");
+    
+    // SFX Effects
     const audioSfxCollect = new Audio("https://cdn.pixabay.com/download/audio/2021/08/09/audio_0e2b4f9821.mp3?filename=coin-collect-retro-8-bit-sound-effect-145251.mp3");
     const audioSfxHit = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2691e8436.mp3?filename=hit-sound-effect-124476.mp3");
     const audioSfxCountdown = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_106b0d9129.mp3?filename=beep-short-113540.mp3");
     const audioSfxWhistle = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_a0a52d37c8.mp3?filename=whistle-blow-113542.mp3");
 
-    audioBgmLanding.loop = true; audioBgmLanding.volume = 0.25;
-    audioBgmGame.loop = true; audioBgmGame.volume = 0.35;
-    audioSfxCollect.volume = 0.6; audioSfxHit.volume = 0.6; audioSfxCountdown.volume = 0.5;
+    audioBgmLanding.loop = true; audioBgmLanding.volume = 0.30;
+    audioBgmGame.loop = true; audioBgmGame.volume = 0.40;
+    audioSfxCollect.volume = 0.6; audioSfxHit.volume = 0.6; audioSfxCountdown.volume = 0.6;
 
     let isMuted = false;
     let audioUnlocked = false;
@@ -622,9 +642,9 @@
         const rank = realIndex !== -1 ? realIndex + 1 : idx + 1;
 
         return `
-          <div class="flex items-center justify-between bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 shadow-sm">
-            <div class="flex items-center gap-2 overflow-hidden">
-              <span class="font-black text-xs min-w-[20px] text-center ${rank === 1 ? 'text-yellow-400' : (rank === 2 ? 'text-slate-300' : (rank === 3 ? 'text-amber-600' : 'text-slate-500'))}">
+          <div class="flex items-center justify-between bg-slate-900/90 p-2 rounded-xl border border-slate-800 shadow-sm">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              <span class="font-black text-xs min-w-[22px] text-center ${rank === 1 ? 'text-yellow-400' : (rank === 2 ? 'text-slate-300' : (rank === 3 ? 'text-amber-600' : 'text-slate-500'))}">
                 #${rank}
               </span>
               ${item.photo_url ? `<img src="${item.photo_url}" class="w-8 h-8 rounded-full object-cover border border-yellow-500/50 shrink-0 shadow"/>` : '<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 shrink-0">👤</div>'}
@@ -688,14 +708,14 @@
       ctx.fillStyle = "#142d14";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
-      // Modern 3D Roadside Trees
-      drawModern3DTrees();
+      // Modern 3D Roadside Trees (เว้นระยะห่างกว้าง นานๆ โผล่ที ไม่แสบตา)
+      drawSparseModern3DTrees();
 
       // Modern Asphalt Road Body
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
-      // 3D Curb Border (White & Red)
+      // 3D Curb Border
       drawModern3DRoadCurb();
 
       // Road Lane Lines
@@ -723,12 +743,12 @@
         else if (obs.type === 'CEMENT') drawModern3DCementBonus(x, obs.y);
       });
 
-      // Player Avatar with 3D Safety Helmet
+      // Player Avatar
       const playerX = laneCenters[currentLane];
       const playerY = 800;
       drawPlayerWithHelmet(playerX, playerY);
 
-      // HUD Score Glass Panel Bar
+      // HUD Score Glass Panel
       ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
       ctx.fillRect(20, 20, canvasElement.width - 40, 65);
       ctx.strokeStyle = "#facc15";
@@ -745,40 +765,30 @@
       ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
-    // --- 3D ENVIRONMENT ART ENGINE ---
-    function drawModern3DTrees() {
-      const treeSpacing = 160;
-      const startY = (roadOffset % treeSpacing) - treeSpacing;
+    // --- ADJUSTED SPARSE TREES (เว้นระยะกว้าง 480px ไม่เวียนหัว) ---
+    function drawSparseModern3DTrees() {
+      const treeSpacing = 480; // เพิ่มระยะห่างให้กว้างขึ้น 3 เท่า
+      const startY = ((roadOffset * 0.4) % treeSpacing) - treeSpacing;
 
-      for (let y = startY; y < canvasElement.height + 60; y += treeSpacing) {
-        // Left Side Tree
-        drawIsometric3DTree(25, y);
-        // Right Side Tree
-        drawIsometric3DTree(canvasElement.width - 25, y + 40);
+      for (let y = startY; y < canvasElement.height + 100; y += treeSpacing) {
+        drawIsometric3DTree(22, y);
+        drawIsometric3DTree(canvasElement.width - 22, y + 240);
       }
     }
 
     function drawIsometric3DTree(x, y) {
       ctx.save();
-      // Trunk Shadow
-      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
-      ctx.beginPath(); ctx.ellipse(x + 4, y + 22, 14, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+      ctx.beginPath(); ctx.ellipse(x + 3, y + 20, 12, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-      // Tree Trunk 3D
       ctx.fillStyle = "#5c3a21";
-      ctx.fillRect(x - 5, y + 2, 10, 20);
+      ctx.fillRect(x - 4, y + 2, 8, 18);
 
-      // 3D Foliage Layer 1 (Base Shadow Layer)
       ctx.fillStyle = "#15803d";
-      ctx.beginPath(); ctx.arc(x, y - 6, 26, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, y - 6, 22, 0, Math.PI * 2); ctx.fill();
 
-      // 3D Foliage Layer 2 (Highlight Top Dome)
       ctx.fillStyle = "#22c55e";
-      ctx.beginPath(); ctx.arc(x - 4, y - 12, 20, 0, Math.PI * 2); ctx.fill();
-
-      // Top Soft Gloss
-      ctx.fillStyle = "#86efac";
-      ctx.beginPath(); ctx.arc(x - 8, y - 16, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x - 3, y - 10, 16, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
 
@@ -786,38 +796,24 @@
       const curbHeight = 40;
       let isRed = false;
       for (let y = (roadOffset % (curbHeight * 2)) - (curbHeight * 2); y < canvasElement.height; y += curbHeight) {
-        // Left Curb 3D
         ctx.fillStyle = isRed ? "#ef4444" : "#f8fafc";
         ctx.fillRect(roadLeftX - 12, y, 12, curbHeight);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-        ctx.fillRect(roadLeftX - 3, y, 3, curbHeight);
-
-        // Right Curb 3D
-        ctx.fillStyle = isRed ? "#ef4444" : "#f8fafc";
         ctx.fillRect(roadLeftX + laneWidth * 4, y, 12, curbHeight);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-        ctx.fillRect(roadLeftX + laneWidth * 4, y, 3, curbHeight);
-
         isRed = !isRed;
       }
     }
 
-    // --- MODERN 3D HAZARDS & BONUS ITEMS ---
     function drawModern3DPothole(x, y) {
       ctx.save();
-      // Outer Cracked Hole Rim
       ctx.fillStyle = "#0f172a";
       ctx.beginPath(); ctx.ellipse(x, y + 4, 44, 24, 0, 0, Math.PI * 2); ctx.fill();
 
-      // Inner Deep Shadow Hole
       ctx.fillStyle = "#020617";
       ctx.beginPath(); ctx.ellipse(x, y, 40, 20, 0, 0, Math.PI * 2); ctx.fill();
 
-      // 3D Red Warning Rim
       ctx.strokeStyle = "#ef4444";
       ctx.lineWidth = 3.5; ctx.stroke();
 
-      // Asphalt Crack Lines
       ctx.strokeStyle = "#f87171"; ctx.lineWidth = 2; ctx.beginPath();
       ctx.moveTo(x - 40, y); ctx.lineTo(x - 56, y - 10);
       ctx.moveTo(x + 40, y); ctx.lineTo(x + 58, y + 12);
@@ -827,19 +823,15 @@
 
     function drawModern3DWoodLog(x, y) {
       ctx.save();
-      // Ground Soft Shadow
       ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
       ctx.beginPath(); ctx.ellipse(x, y + 14, 40, 10, 0, 0, Math.PI * 2); ctx.fill();
 
-      // Timber Main Body 3D
       ctx.fillStyle = "#78350f";
       ctx.beginPath(); ctx.roundRect(x - 38, y - 12, 76, 24, 8); ctx.fill();
 
-      // Timber Texture Grain
       ctx.fillStyle = "#92400e";
       ctx.fillRect(x - 20, y - 8, 40, 16);
 
-      // 3D Cut Ends (Wood Rings)
       ctx.fillStyle = "#d97706";
       ctx.beginPath(); ctx.ellipse(x - 30, y, 7, 10, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(x + 30, y, 7, 10, 0, 0, Math.PI * 2); ctx.fill();
@@ -850,15 +842,12 @@
 
     function drawModern3DStonePile(x, y) {
       ctx.save();
-      // Base Shadow
       ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
       ctx.beginPath(); ctx.ellipse(x, y + 12, 32, 10, 0, 0, Math.PI * 2); ctx.fill();
 
-      // Rocks Cluster Isometric 3D
       ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(x - 14, y + 4, 15, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#64748b"; ctx.beginPath(); ctx.arc(x + 12, y + 4, 15, 0, Math.PI * 2); ctx.fill();
       
-      // Top Pyramid Rock
       ctx.fillStyle = "#94a3b8"; ctx.beginPath(); ctx.arc(x, y - 8, 17, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); ctx.arc(x - 4, y - 12, 7, 0, Math.PI * 2); ctx.fill();
 
@@ -870,11 +859,9 @@
       ctx.save();
       ctx.shadowColor = "#facc15"; ctx.shadowBlur = 16;
       
-      // Box 3D
       ctx.fillStyle = "#ef4444"; ctx.fillRect(x - 18, y - 18, 36, 36);
       ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 18, y, 36, 18);
 
-      // Gold Ribbon
       ctx.fillStyle = "#facc15"; 
       ctx.fillRect(x - 5, y - 18, 10, 36);
       ctx.fillRect(x - 18, y - 5, 36, 10);
@@ -886,15 +873,12 @@
       ctx.save();
       ctx.shadowColor = "#eab308"; ctx.shadowBlur = 18;
 
-      // Outer Gold Rim 3D
       ctx.fillStyle = "#ca8a04"; ctx.beginPath(); ctx.arc(x, y + 2, 20, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#eab308"; ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI * 2); ctx.fill();
       
-      // Inner Gloss Ring
       ctx.fillStyle = "#fef08a"; ctx.beginPath(); ctx.arc(x - 3, y - 3, 15, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.fill();
 
-      // Thai Baht Symbol 3D
       ctx.fillStyle = "#854d0e"; ctx.font = "900 18px Kanit"; ctx.textAlign = "center"; ctx.fillText("฿", x, y + 6);
       ctx.restore();
     }
@@ -903,7 +887,6 @@
       ctx.save();
       ctx.shadowColor = "#f97316"; ctx.shadowBlur = 16;
 
-      // 3D Cement Bag
       ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.roundRect(x - 20, y - 20, 40, 40, 8); ctx.fill();
       ctx.fillStyle = "#c2410c"; ctx.beginPath(); ctx.roundRect(x - 20, y, 40, 20, 8); ctx.fill();
 
@@ -911,7 +894,6 @@
       ctx.restore();
     }
 
-    // --- PLAYER AVATAR & 3D HELMET ---
     function drawPlayerWithHelmet(x, y) {
       ctx.save();
       ctx.fillStyle = "#2563eb"; ctx.beginPath(); ctx.arc(x, y, 28, 0, Math.PI * 2); ctx.fill();
@@ -933,25 +915,19 @@
       targetCtx.translate(x, y);
       targetCtx.scale(scale, scale);
 
-      // Helmet Base Shadow 3D
       targetCtx.fillStyle = "#a16207";
       targetCtx.beginPath(); targetCtx.arc(0, 3, 26, Math.PI, 0); targetCtx.fill();
 
-      // Main Helmet Dome (Yellow)
       targetCtx.fillStyle = "#facc15";
       targetCtx.beginPath(); targetCtx.arc(0, 0, 26, Math.PI, 0); targetCtx.fill();
 
-      // Center Ridge 3D
       targetCtx.fillStyle = "#eab308"; targetCtx.fillRect(-5, -27, 10, 27);
 
-      // Silver Reflective Rim
       targetCtx.fillStyle = "#e2e8f0"; targetCtx.fillRect(-22, -12, 44, 4);
 
-      // 3D Visor / Brim
       targetCtx.fillStyle = "#ca8a04";
       targetCtx.beginPath(); targetCtx.roundRect(-32, -2, 64, 10, 4); targetCtx.fill();
 
-      // 3D Headlamp Light
       targetCtx.fillStyle = "#38bdf8"; targetCtx.beginPath(); targetCtx.arc(0, -14, 5, 0, Math.PI * 2); targetCtx.fill();
 
       targetCtx.restore();
