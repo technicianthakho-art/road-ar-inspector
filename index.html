@@ -18,13 +18,13 @@
     body { background-color: #030712; color: #f8fafc; overflow: hidden; }
     #webcam { display: none; }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(14px);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
-<body class="w-screen h-screen flex items-center justify-center p-0 m-0 bg-slate-950">
+<body class="w-screen h-screen flex items-center justify-center p-0 m-0 bg-slate-950" onclick="unlockAudioAutoplay()">
 
   <!-- Container หลัก แนวตั้ง 9:16 Full Screen Vertical -->
   <div class="relative w-full h-full max-w-[540px] max-h-[960px] bg-slate-900 overflow-hidden flex flex-col justify-between shadow-2xl border-x border-slate-800">
@@ -35,27 +35,31 @@
     <!-- Canvas เกมหลัก -->
     <canvas id="gameCanvas" width="540" height="960" class="absolute inset-0 w-full h-full z-10"></canvas>
 
-    <!-- Mute / Unmute Floating Sound Button -->
-    <button id="toggleAudioBtn" onclick="toggleMuteSound()" class="absolute top-3 right-3 z-30 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/60 p-2 rounded-full text-lg text-yellow-400 shadow-lg transition-transform active:scale-95">
+    <!-- Mute / Unmute Floating Sound Button (แสดงเฉพาะหน้า UI ปิดขณะเล่นเกม) -->
+    <button id="toggleAudioBtn" onclick="toggleMuteSound(event)" class="absolute top-2.5 right-3 z-30 bg-slate-800/80 hover:bg-slate-700 border border-slate-600/60 p-2 rounded-full text-base text-yellow-400 shadow-lg transition-transform active:scale-95">
       🔊
     </button>
 
-    <!-- Overlay UI Screen -->
-    <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 glass-panel transition-all duration-300">
+    <!-- Overlay UI Screen (จัดการแสดงผลทุกหน้า) -->
+    <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-between p-4 pt-3 glass-panel transition-all duration-300">
       
+      <!-- ========================================== -->
       <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard) -->
-      <div id="landingScreen" class="w-full flex flex-col items-center space-y-4 text-center my-auto">
-        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
+      <!-- ========================================== -->
+      <div id="landingScreen" class="w-full flex flex-col items-center space-y-2.5 text-center my-auto">
+        
+        <!-- ป้ายติดขอบบนสุด -->
+        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold tracking-wider">
           กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
         </div>
         
         <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow leading-tight">
-          เกมสำรวจสายทาง กองช่าง<br/>อบต.ท่าก๊อ
+          เกมสำรวจสายทางดิจิทัล
         </h1>
-        <p class="text-slate-400 text-xs -mt-1">ระบบตรวจสอบและรายงานสภาพสายทางดิจิทัล</p>
+        <p class="text-slate-400 text-[11px] -mt-1">ระบบตรวจสอบและรายงานสภาพสายทาง อบต.ท่าก๊อ</p>
 
-        <!-- ตาราง TOP 5 LEADERBOARD + ช่องเสิร์ช -->
-        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 text-left shadow-2xl space-y-2.5">
+        <!-- ตาราง TOP 5 LEADERBOARD (ขยายพื้นที่ความสูง) -->
+        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-left shadow-2xl space-y-2">
           <div class="flex items-center justify-between">
             <h3 class="text-xs font-bold text-yellow-400 flex items-center gap-1">
               <span>🏆 5 อันดับสูงสุด</span>
@@ -66,31 +70,36 @@
           <!-- ช่องค้นหาชื่อผู้เล่น -->
           <div class="relative">
             <input type="text" id="searchPlayerInput" oninput="filterLeaderboard()" placeholder="🔍 ค้นหาชื่อผู้เล่น..." 
-                   class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg pl-3 pr-8 py-2 focus:ring-yellow-400 focus:border-yellow-400">
+                   class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg pl-3 pr-8 py-1.5 focus:ring-yellow-400 focus:border-yellow-400">
           </div>
 
           <!-- รายการตารางคะแนน -->
-          <div id="landingLeaderboardList" class="space-y-1.5 max-h-52 overflow-y-auto pr-1 text-xs">
-            <div class="text-slate-500 italic text-center py-4">กำลังดึงตารางคะแนน...</div>
+          <div id="landingLeaderboardList" class="space-y-1.5 max-h-64 overflow-y-auto pr-1 text-xs min-h-[180px]">
+            <div class="text-slate-500 italic text-center py-8">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
         <!-- ปุ่มเริ่มเล่นเกม -->
         <button onclick="goToSetupScreen()" 
-                class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-lg py-3.5 px-6 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-2">
+                class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3 px-6 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
           <span>🚀 ลงทะเบียนเข้าเล่นเกม</span>
         </button>
       </div>
 
 
+      <!-- ========================================== -->
       <!-- SCREEN 2: หน้าลงทะเบียน & เช็กกล้อง -->
-      <div id="setupScreen" class="w-full flex flex-col items-center space-y-3 text-center hidden my-auto">
+      <!-- ========================================== -->
+      <div id="setupScreen" class="w-full flex flex-col items-center space-y-2.5 text-center hidden my-auto">
+        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold">
+          กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+        </div>
+
         <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
-        <p class="text-slate-400 text-xs -mt-1">ทดสอบกล้อง สวมหมวก AR และระบุชื่อก่อนเล่น</p>
 
         <!-- จอลองกล้อง Preview -->
-        <div class="relative w-60 h-44 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-1">
-          <canvas id="previewCanvas" width="240" height="176" class="w-full h-full object-cover transform -scale-x-100"></canvas>
+        <div class="relative w-56 h-40 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center">
+          <canvas id="previewCanvas" width="224" height="160" class="w-full h-full object-cover transform -scale-x-100"></canvas>
           <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
             ⏳ กำลังเชื่อมต่อกล้อง...
           </div>
@@ -98,62 +107,68 @@
 
         <!-- เลือกอุปกรณ์กล้อง -->
         <div class="w-full max-w-xs text-left">
-          <label class="text-xs text-slate-300 mb-1 block">🎥 เลือกกล้องที่ใช้งาน:</label>
-          <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:ring-yellow-400 focus:border-yellow-400">
+          <label class="text-[11px] text-slate-300 mb-0.5 block">🎥 เลือกกล้องที่ใช้งาน:</label>
+          <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2 focus:ring-yellow-400">
             <option value="">กำลังค้นหากล้อง...</option>
           </select>
         </div>
 
         <!-- ช่องกรอกชื่อ -->
         <div class="w-full max-w-xs text-left">
-          <label class="text-xs text-slate-300 mb-1 block">👤 ชื่อผู้เล่น:</label>
+          <label class="text-[11px] text-slate-300 mb-0.5 block">👤 ชื่อผู้เล่น:</label>
           <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
-                 class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 focus:ring-yellow-400 text-center">
+                 class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2 focus:ring-yellow-400 text-center">
         </div>
 
         <div class="flex gap-2 w-full max-w-xs pt-1">
-          <button onclick="goToLandingScreen()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl text-xs">
+          <button onclick="goToLandingScreen()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs">
             ⬅️ ย้อนกลับ
           </button>
           <button id="btnStartGame" onclick="confirmAndStartGame()" 
-                  class="w-2/3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-sm py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1">
+                  class="w-2/3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1">
             <span>📸 ถ่ายรูป & เริ่มเล่น</span>
           </button>
         </div>
       </div>
 
 
+      <!-- ========================================== -->
       <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver) -->
-      <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-3 text-center my-auto relative">
+      <!-- ========================================== -->
+      <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-2.5 text-center my-auto relative">
         
         <!-- Secret Admin Button -->
-        <button onclick="openAdminModal()" class="absolute -top-4 -right-2 w-8 h-8 opacity-20 hover:opacity-100 transition-opacity flex items-center justify-center text-slate-400 text-xs">
+        <button onclick="openAdminModal()" class="absolute -top-3 -right-1 w-8 h-8 opacity-20 hover:opacity-100 flex items-center justify-center text-slate-400 text-xs">
           ⚙️
         </button>
 
-        <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
+        <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold">
+          กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
+        </div>
+
+        <h2 class="text-xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
         
         <!-- การ์ดแสดงผลผู้เล่น + รูปถ่ายหน้าจริง -->
-        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3.5 w-full max-w-xs flex items-center justify-between shadow-xl">
+        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3 w-full max-w-xs flex items-center justify-between shadow-xl">
           <div class="text-left">
-            <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">ผู้เล่น: -</div>
-            <div id="resultScore" class="text-xl font-black text-yellow-400">0 คะแนน</div>
+            <div id="resultPlayerName" class="font-bold text-slate-200 text-xs">ผู้เล่น: -</div>
+            <div id="resultScore" class="text-lg font-black text-yellow-400">0 คะแนน</div>
           </div>
-          <img id="resultPlayerImg" class="w-14 h-14 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
+          <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
         </div>
 
         <!-- ตาราง TOP 5 LEADERBOARD สรุป -->
-        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-left shadow-inner">
-          <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between">
+        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-2.5 text-left shadow-inner">
+          <h3 class="text-xs font-bold text-yellow-400 mb-1.5 flex items-center justify-between">
             <span>🏆 5 อันดับสูงสุดล่าสุด</span>
           </h3>
-          <div id="gameOverLeaderboardList" class="space-y-1.5 max-h-44 overflow-y-auto pr-1 text-xs">
-            <div class="text-slate-500 italic text-center py-2">กำลังดึงตารางคะแนน...</div>
+          <div id="gameOverLeaderboardList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs min-h-[140px]">
+            <div class="text-slate-500 italic text-center py-4">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
         <button onclick="goToLandingScreen()" 
-                class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-xl transition-all active:scale-95 shadow-md">
+                class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95 shadow-md">
           🏠 กลับหน้าหลัก / หน้าตารางคะแนน
         </button>
       </div>
@@ -161,7 +176,7 @@
     </div>
 
     <!-- Modal รหัสผ่าน Admin -->
-    <div id="adminModal" class="hidden absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6">
+    <div id="adminModal" class="hidden absolute inset-0 z-40 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6">
       <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-xs text-center space-y-4 shadow-2xl">
         <h3 class="text-lg font-bold text-yellow-400">🔒 ผู้ดูแลระบบ (Admin)</h3>
         <p class="text-xs text-slate-400">กรอกรหัสผ่านเพื่อล้างสถิติคะแนนทั้งหมด</p>
@@ -187,25 +202,39 @@
     const ADMIN_PASSWORD = "1234";
 
     // --- AUDIO SYSTEM (ROYALTY-FREE CDN AUDIO) ---
+    const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
     const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a70514.mp3?filename=retro-arcade-game-116087.mp3");
     const audioBgmVictory = new Audio("https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=victory-fanfare-10126.mp3");
+    
     const audioSfxCollect = new Audio("https://cdn.pixabay.com/download/audio/2021/08/09/audio_0e2b4f9821.mp3?filename=coin-collect-retro-8-bit-sound-effect-145251.mp3");
     const audioSfxHit = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2691e8436.mp3?filename=hit-sound-effect-124476.mp3");
     const audioSfxCountdown = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_106b0d9129.mp3?filename=beep-short-113540.mp3");
     const audioSfxWhistle = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_a0a52d37c8.mp3?filename=whistle-blow-113542.mp3");
 
-    audioBgmGame.loop = true;
-    audioBgmGame.volume = 0.35;
-    audioBgmVictory.loop = true;
-    audioBgmVictory.volume = 0.30;
+    audioBgmLanding.loop = true; audioBgmLanding.volume = 0.25;
+    audioBgmGame.loop = true; audioBgmGame.volume = 0.35;
+    audioBgmVictory.loop = true; audioBgmVictory.volume = 0.30;
+    
     audioSfxCollect.volume = 0.6;
     audioSfxHit.volume = 0.6;
     audioSfxCountdown.volume = 0.5;
 
     let isMuted = false;
+    let audioUnlocked = false;
 
-    function toggleMuteSound() {
+    function unlockAudioAutoplay() {
+      if (!audioUnlocked) {
+        audioUnlocked = true;
+        if (gameState === 'LANDING' && !isMuted) {
+          audioBgmLanding.play().catch(() => {});
+        }
+      }
+    }
+
+    function toggleMuteSound(e) {
+      if (e) e.stopPropagation();
       isMuted = !isMuted;
+      audioBgmLanding.muted = isMuted;
       audioBgmGame.muted = isMuted;
       audioBgmVictory.muted = isMuted;
       audioSfxCollect.muted = isMuted;
@@ -232,6 +261,7 @@
     const cameraSelect = document.getElementById('cameraSelect');
     const cameraStatusBadge = document.getElementById('cameraStatusBadge');
     
+    const toggleAudioBtn = document.getElementById('toggleAudioBtn');
     const uiOverlay = document.getElementById('uiOverlay');
     const landingScreen = document.getElementById('landingScreen');
     const setupScreen = document.getElementById('setupScreen');
@@ -289,6 +319,12 @@
       audioBgmGame.pause();
       audioBgmVictory.pause();
 
+      if (audioUnlocked && !isMuted) {
+        audioBgmLanding.currentTime = 0;
+        audioBgmLanding.play().catch(() => {});
+      }
+
+      toggleAudioBtn.classList.remove('hidden');
       uiOverlay.classList.remove('hidden');
       landingScreen.classList.remove('hidden');
       setupScreen.classList.add('hidden');
@@ -424,7 +460,10 @@
       playerImageObject = new Image();
       playerImageObject.src = URL.createObjectURL(playerPhotoBlob);
 
+      audioBgmLanding.pause();
       uiOverlay.classList.add('hidden');
+      toggleAudioBtn.classList.add('hidden'); // ซ่อนปุ่มเสียงระหว่างเล่นเกม
+
       gameState = 'COUNTDOWN';
       countdownVal = 5;
       score = 0;
@@ -474,6 +513,7 @@
         audioBgmVictory.play().catch(() => {});
       }
 
+      toggleAudioBtn.classList.remove('hidden'); // แสดงปุ่มเสียงในหน้าสรุปผล
       uiOverlay.classList.remove('hidden');
       setupScreen.classList.add('hidden');
       gameOverScreen.classList.remove('hidden');
