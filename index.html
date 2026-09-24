@@ -18,7 +18,7 @@
     body { background-color: #030712; color: #f8fafc; overflow: hidden; }
     #webcam { display: none; }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.93);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -35,23 +35,23 @@
     <!-- Canvas เกมหลัก -->
     <canvas id="gameCanvas" width="540" height="960" class="absolute inset-0 w-full h-full z-10"></canvas>
 
-    <!-- Overlay UI Screen (หน้าลงทะเบียน / สรุปคะแนน) -->
+    <!-- Overlay UI Screen -->
     <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 glass-panel transition-all duration-300">
       
       <!-- 1. หน้าทดสอบกล้อง & ลงทะเบียน -->
-      <div id="setupScreen" class="w-full flex flex-col items-center space-y-3.5 text-center">
+      <div id="setupScreen" class="w-full flex flex-col items-center space-y-3 text-center">
         <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
           กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
         </div>
         
-        <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow px-2 leading-tight">
+        <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow leading-tight">
           เกมสำรวจสายทาง กองช่าง<br/>อบต.ท่าก๊อ
         </h1>
         <p class="text-slate-400 text-xs -mt-1">ลงทะเบียนพร้อมทดสอบกล้องก่อนเริ่มเล่น</p>
 
-        <!-- จอลองกล้อง Video Preview Box -->
-        <div class="relative w-64 h-48 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-1">
-          <canvas id="previewCanvas" width="256" height="192" class="w-full h-full object-cover transform -scale-x-100"></canvas>
+        <!-- จอลองกล้อง Preview -->
+        <div class="relative w-60 h-44 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-1">
+          <canvas id="previewCanvas" width="240" height="176" class="w-full h-full object-cover transform -scale-x-100"></canvas>
           <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
             ⏳ กำลังเชื่อมต่อกล้อง...
           </div>
@@ -69,10 +69,10 @@
         <div class="w-full max-w-xs text-left">
           <label class="text-xs text-slate-300 mb-1 block">👤 ชื่อผู้เล่น:</label>
           <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
-                 class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 focus:ring-yellow-400 focus:border-yellow-400 text-center">
+                 class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 focus:ring-yellow-400 text-center">
         </div>
 
-        <!-- ปุ่มถ่ายรูปสแกนหน้า + เริ่มเล่น -->
+        <!-- ปุ่มเริ่มเล่น -->
         <button id="btnStartGame" onclick="confirmAndStartGame()" 
                 class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3 px-6 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-1">
           <span>📸 บันทึกรูปหน้า & เริ่มสำรวจ</span>
@@ -80,7 +80,13 @@
       </div>
 
       <!-- 2. หน้าสรุปผลหลังเล่นเสร็จ + TOP 10 LEADERBOARD -->
-      <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-3 text-center my-auto">
+      <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-3 text-center my-auto relative">
+        
+        <!-- Secret Admin Button (ปุ่มซ่อนแอดมินมุมขวาบน) -->
+        <button onclick="openAdminModal()" class="absolute -top-4 -right-2 w-8 h-8 opacity-20 hover:opacity-100 transition-opacity flex items-center justify-center text-slate-400 text-xs">
+          ⚙️
+        </button>
+
         <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
         
         <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-3 w-full max-w-xs flex items-center justify-between shadow-lg">
@@ -96,7 +102,7 @@
           <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between">
             <span>🏆 10 อันดับสูงสุด</span>
           </h3>
-          <div id="leaderboardList" class="space-y-1.5 max-h-52 overflow-y-auto pr-1 text-xs">
+          <div id="leaderboardList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs">
             <div class="text-slate-500 italic text-center py-2">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
@@ -108,6 +114,23 @@
       </div>
 
     </div>
+
+    <!-- 3. Modal รหัสผ่าน Admin (ซ่อนไว้) -->
+    <div id="adminModal" class="hidden absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6">
+      <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-xs text-center space-y-4 shadow-2xl">
+        <h3 class="text-lg font-bold text-yellow-400">🔒 ผู้ดูแลระบบ (Admin)</h3>
+        <p class="text-xs text-slate-400">กรอกรหัสผ่านเพื่อล้างสถิติคะแนนทั้งหมด</p>
+        
+        <input type="password" id="adminPasswordInput" placeholder="กรอกรหัสผ่าน..." 
+               class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 text-center focus:ring-yellow-400">
+        
+        <div class="flex gap-2">
+          <button onclick="closeAdminModal()" class="w-1/2 bg-slate-800 text-slate-300 py-2 rounded-lg text-xs font-bold">ยกเลิก</button>
+          <button onclick="verifyAndResetLeaderboard()" class="w-1/2 bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg text-xs font-bold">🗑️ ล้างสถิติ</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -115,6 +138,8 @@
     const SUPABASE_URL = "https://apkcsssacamoxrobvcnw.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwa2Nzc3NhY2Ftb3hyb2J2Y253Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNTYwNzksImV4cCI6MjEwNTgzMjA3OX0.QraPn33RKDNQlXnMhlchLtBl4kTfCVdurZLNb6Gmnjs";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const ADMIN_PASSWORD = "1234"; // รหัสผ่านแอดมินสำหรับรีเซ็ตคะแนน
 
     // --- DOM ELEMENTS ---
     const videoElement = document.getElementById('webcam');
@@ -128,6 +153,7 @@
     const uiOverlay = document.getElementById('uiOverlay');
     const setupScreen = document.getElementById('setupScreen');
     const gameOverScreen = document.getElementById('gameOverScreen');
+    const adminModal = document.getElementById('adminModal');
 
     // --- GAME STATE & VARIABLES ---
     let gameState = 'SETUP'; 
@@ -139,7 +165,7 @@
     let playerImageObject = null;
 
     // Lane Settings
-    const laneWidth = 100;
+    const laneWidth = 95;
     const roadLeftX = (canvasElement.width - (laneWidth * 4)) / 2;
     const laneCenters = [
       roadLeftX + laneWidth * 0.5,
@@ -237,7 +263,7 @@
           const nose = results.multiFaceLandmarks[0][1];
           const x = (1.0 - nose.x) * previewCanvas.width;
           const y = nose.y * previewCanvas.height;
-          drawFullSafetyHelmet(pCtx, x, y - 35, 1.3);
+          drawFullSafetyHelmet(pCtx, x, y - 30, 1.2);
         }
         pCtx.restore();
       }
@@ -322,14 +348,50 @@
       gameOverScreen.classList.add('hidden');
     }
 
-    // --- SUPABASE DATA HANDLER (WITH FALLBACK) ---
+    // --- ADMIN RESET FUNCTIONS ---
+    function openAdminModal() {
+      document.getElementById('adminPasswordInput').value = '';
+      adminModal.classList.remove('hidden');
+    }
+
+    function closeAdminModal() {
+      adminModal.classList.add('hidden');
+    }
+
+    async function verifyAndResetLeaderboard() {
+      const pwd = document.getElementById('adminPasswordInput').value;
+      if (pwd !== ADMIN_PASSWORD) {
+        alert("❌ รหัสผ่านแอดมินไม่ถูกต้อง!");
+        return;
+      }
+
+      if (confirm("⚠️ คุณแน่ใจหรือไม่ที่จะล้างสถิติคะแนนทั้งหมด?")) {
+        try {
+          // ลบข้อมูลทั้งหมดในตาราง leaderboard
+          const { error } = await supabaseClient
+            .from('leaderboard')
+            .delete()
+            .neq('id', 0); // ลบทุก row
+
+          if (error) throw error;
+
+          alert("✅ ล้างสถิติคะแนนเรียบร้อยแล้ว!");
+          closeAdminModal();
+          fetchTop10Leaderboard(); // โหลดตารางใหม่
+        } catch (err) {
+          console.error(err);
+          alert("❌ ไม่สามารถล้างสถิติได้ (เช็ก RLS Delete Policy)");
+        }
+      }
+    }
+
+    // --- SUPABASE DATA HANDLER ---
     async function uploadScoreAndFetchLeaderboard() {
       const listContainer = document.getElementById('leaderboardList');
       listContainer.innerHTML = `<div class="text-xs text-yellow-400 animate-pulse text-center py-2">⏳ กำลังบันทึกคะแนน...</div>`;
 
       let photoUrl = null;
 
-      // 1. พยายามอัปโหลดรูปภาพขึ้น Storage
       try {
         if (playerPhotoBlob) {
           const fileName = `player_${Date.now()}.jpg`;
@@ -342,10 +404,9 @@
           }
         }
       } catch (e) {
-        console.warn("Storage upload failed, fallback to DB insert without photo.", e);
+        console.warn("Storage upload failed.", e);
       }
 
-      // 2. บันทึกคะแนนลง Database
       try {
         await supabaseClient.from('leaderboard').insert([{
           player_name: playerName,
@@ -356,7 +417,6 @@
         console.error("DB Insert Error:", dbErr);
       }
 
-      // 3. ดึง TOP 10 ขึ้นมาแสดงผล
       fetchTop10Leaderboard();
     }
 
@@ -396,12 +456,11 @@
     // --- GAME ENGINE LOGIC & DRAWING ---
     function updateGameLogic() {
       roadOffset = (roadOffset + roadSpeed) % 60;
-      score += 1; // คะแนนสะสมระยะทาง
+      score += 1;
 
-      // สุ่มสปอว์นอุปสรรคและไอเทมโบนัส
       if (Math.random() < 0.042) {
         const randomLane = Math.floor(Math.random() * 4);
-        const isBonus = Math.random() < 0.15; // 15% เป็นโบนัส
+        const isBonus = Math.random() < 0.15;
         
         let type = 'POTHOLE';
         if (isBonus) {
@@ -419,12 +478,11 @@
         let obs = obstacles[i];
         obs.y += roadSpeed;
 
-        // Collision Check
         if (obs.y > 760 && obs.y < 840 && obs.lane === currentLane) {
           if (['POTHOLE', 'WOOD_LOG', 'STONE_PILE'].includes(obs.type)) {
-            score = Math.max(0, score - 50); // โดนอุปสรรค หัก 50
+            score = Math.max(0, score - 50);
           } else {
-            score += 120; // เก็บโบนัส ได้ +120
+            score += 120;
           }
           obstacles.splice(i, 1);
           continue;
@@ -437,25 +495,19 @@
     }
 
     function drawGameScene() {
-      // 1. ฉากพื้นหลังข้างทาง
+      // 1. ฉากทัศนียภาพสองข้างทาง (Village Scenery & Curb)
       ctx.fillStyle = "#1e3a1e";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
-      // ต้นไม้เคลื่อนที่ข้างทาง
-      ctx.fillStyle = "#15803d";
-      for(let y = (roadOffset % 80) - 80; y < canvasElement.height; y += 80) {
-        ctx.beginPath(); ctx.arc(25, y, 18, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(canvasElement.width - 25, y, 18, 0, Math.PI * 2); ctx.fill();
-      }
+      // วาดบ้านเรือนและอาคารข้างทาง
+      drawRoadsideVillage();
 
       // 2. ถนนแนวตั้ง 4 เลน
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
-      // ขอบทางแถบเหลือง-ดำ
-      ctx.fillStyle = "#facc15";
-      ctx.fillRect(roadLeftX - 12, 0, 12, canvasElement.height);
-      ctx.fillRect(roadLeftX + laneWidth * 4, 0, 12, canvasElement.height);
+      // ขอบฟุตบาทแถบ ขาว-แดง สลับความเร็ว
+      drawRoadCurb();
 
       // เส้นแบ่งเลนถนน
       ctx.strokeStyle = "#94a3b8";
@@ -504,9 +556,35 @@
       ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
-    // --- GRAPHICS DRAWING FUNCTIONS ---
+    // --- ENVIRONMENT GRAPHICS ---
     
-    // 1. หลุม 3D
+    // วาดบ้านเรือนและเสาไฟฟ้าข้างทาง
+    function drawRoadsideVillage() {
+      ctx.fillStyle = "#3b4252";
+      for (let y = (roadOffset % 160) - 160; y < canvasElement.height; y += 160) {
+        // อาคารฝั่งซ้าย
+        ctx.fillRect(10, y, 40, 50);
+        ctx.fillStyle = "#facc15"; ctx.fillRect(20, y + 15, 10, 10); ctx.fillStyle = "#3b4252";
+        
+        // บ้านฝั่งขวา
+        ctx.fillRect(canvasElement.width - 50, y + 60, 40, 45);
+        ctx.fillStyle = "#ef4444"; ctx.fillRect(canvasElement.width - 50, y + 50, 40, 10); ctx.fillStyle = "#3b4252";
+      }
+    }
+
+    // วาดฟุตบาท ขาว-แดง สลับความเร็ว
+    function drawRoadCurb() {
+      const curbHeight = 40;
+      let isRed = false;
+      for (let y = (roadOffset % (curbHeight * 2)) - (curbHeight * 2); y < canvasElement.height; y += curbHeight) {
+        ctx.fillStyle = isRed ? "#ef4444" : "#ffffff";
+        ctx.fillRect(roadLeftX - 12, y, 12, curbHeight);
+        ctx.fillRect(roadLeftX + laneWidth * 4, y, 12, curbHeight);
+        isRed = !isRed;
+      }
+    }
+
+    // --- HAZARD & BONUS DRAWING FUNCTIONS ---
     function draw3DPothole(x, y) {
       ctx.fillStyle = "#020617";
       ctx.beginPath(); ctx.ellipse(x, y + 6, 42, 24, 0, 0, Math.PI * 2); ctx.fill();
@@ -520,7 +598,6 @@
       ctx.stroke();
     }
 
-    // 2. ขอนไม้ 3D
     function drawWoodLog(x, y) {
       ctx.fillStyle = "#78350f";
       ctx.beginPath(); ctx.roundRect(x - 35, y - 12, 70, 24, 6); ctx.fill();
@@ -528,7 +605,6 @@
       ctx.fillStyle = "#b45309"; ctx.beginPath(); ctx.arc(x - 28, y, 8, 0, Math.PI*2); ctx.fill();
     }
 
-    // 3. กองหิน
     function drawStonePile(x, y) {
       ctx.fillStyle = "#64748b";
       ctx.beginPath(); ctx.arc(x - 12, y + 5, 16, 0, Math.PI*2); ctx.fill();
@@ -538,7 +614,6 @@
       ctx.strokeStyle = "#334155"; ctx.lineWidth = 2; ctx.stroke();
     }
 
-    // 4. โบนัสของขวัญ
     function drawGiftBonus(x, y) {
       ctx.shadowColor = "#facc15"; ctx.shadowBlur = 10;
       ctx.fillStyle = "#ef4444"; ctx.fillRect(x - 18, y - 18, 36, 36);
@@ -546,7 +621,6 @@
       ctx.shadowBlur = 0;
     }
 
-    // 5. โบนัสถุงเงิน
     function drawMoneyBonus(x, y) {
       ctx.shadowColor = "#22c55e"; ctx.shadowBlur = 10;
       ctx.fillStyle = "#16a34a"; ctx.beginPath(); ctx.arc(x, y + 2, 18, 0, Math.PI*2); ctx.fill();
@@ -554,7 +628,6 @@
       ctx.shadowBlur = 0;
     }
 
-    // 6. โบนัสถุงปูน
     function drawCementBonus(x, y) {
       ctx.shadowColor = "#f59e0b"; ctx.shadowBlur = 10;
       ctx.fillStyle = "#d97706"; ctx.beginPath(); ctx.roundRect(x - 18, y - 18, 36, 36, 6); ctx.fill();
@@ -562,7 +635,6 @@
       ctx.shadowBlur = 0;
     }
 
-    // วาดตัวละครผู้เล่น
     function drawPlayerWithHelmet(x, y) {
       ctx.save();
       ctx.fillStyle = "#2563eb";
@@ -580,7 +652,6 @@
       ctx.restore();
     }
 
-    // วาดหมวกเซฟตี้
     function drawFullSafetyHelmet(targetCtx, x, y, scale = 1.0) {
       targetCtx.save();
       targetCtx.translate(x, y);
