@@ -43,12 +43,9 @@
     <!-- Overlay UI Screen (จัดการแสดงผลทุกหน้า) -->
     <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-between p-4 pt-3 glass-panel transition-all duration-300">
       
-      <!-- ========================================== -->
       <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard) -->
-      <!-- ========================================== -->
       <div id="landingScreen" class="w-full flex flex-col items-center space-y-2.5 text-center my-auto">
         
-        <!-- ป้ายติดขอบบนสุด -->
         <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold tracking-wider">
           กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
         </div>
@@ -67,19 +64,16 @@
             <span id="totalPlayersBadge" class="text-[10px] text-slate-500 font-medium">ผู้เล่นทั้งหมด 0 คน</span>
           </div>
 
-          <!-- ช่องค้นหาชื่อผู้เล่น -->
           <div class="relative">
             <input type="text" id="searchPlayerInput" oninput="filterLeaderboard()" placeholder="🔍 ค้นหาชื่อผู้เล่น..." 
                    class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg pl-3 pr-8 py-1.5 focus:ring-yellow-400 focus:border-yellow-400">
           </div>
 
-          <!-- รายการตารางคะแนน -->
           <div id="landingLeaderboardList" class="space-y-1.5 max-h-64 overflow-y-auto pr-1 text-xs min-h-[180px]">
             <div class="text-slate-500 italic text-center py-8">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <!-- ปุ่มเริ่มเล่นเกม -->
         <button onclick="goToSetupScreen()" 
                 class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3 px-6 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
           <span>🚀 ลงทะเบียนเข้าเล่นเกม</span>
@@ -87,9 +81,7 @@
       </div>
 
 
-      <!-- ========================================== -->
       <!-- SCREEN 2: หน้าลงทะเบียน & เช็กกล้อง -->
-      <!-- ========================================== -->
       <div id="setupScreen" class="w-full flex flex-col items-center space-y-2.5 text-center hidden my-auto">
         <div class="bg-yellow-500/20 border border-yellow-500/40 px-3 py-0.5 rounded-full text-yellow-400 text-[11px] font-bold">
           กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
@@ -97,7 +89,6 @@
 
         <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
 
-        <!-- จอลองกล้อง Preview -->
         <div class="relative w-56 h-40 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center">
           <canvas id="previewCanvas" width="224" height="160" class="w-full h-full object-cover transform -scale-x-100"></canvas>
           <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
@@ -105,7 +96,6 @@
           </div>
         </div>
 
-        <!-- เลือกอุปกรณ์กล้อง -->
         <div class="w-full max-w-xs text-left">
           <label class="text-[11px] text-slate-300 mb-0.5 block">🎥 เลือกกล้องที่ใช้งาน:</label>
           <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2 focus:ring-yellow-400">
@@ -113,7 +103,6 @@
           </select>
         </div>
 
-        <!-- ช่องกรอกชื่อ -->
         <div class="w-full max-w-xs text-left">
           <label class="text-[11px] text-slate-300 mb-0.5 block">👤 ชื่อผู้เล่น:</label>
           <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
@@ -132,12 +121,9 @@
       </div>
 
 
-      <!-- ========================================== -->
       <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver) -->
-      <!-- ========================================== -->
       <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-2.5 text-center my-auto relative">
         
-        <!-- Secret Admin Button -->
         <button onclick="openAdminModal()" class="absolute -top-3 -right-1 w-8 h-8 opacity-20 hover:opacity-100 flex items-center justify-center text-slate-400 text-xs">
           ⚙️
         </button>
@@ -148,7 +134,6 @@
 
         <h2 class="text-xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
         
-        <!-- การ์ดแสดงผลผู้เล่น + รูปถ่ายหน้าจริง -->
         <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3 w-full max-w-xs flex items-center justify-between shadow-xl">
           <div class="text-left">
             <div id="resultPlayerName" class="font-bold text-slate-200 text-xs">ผู้เล่น: -</div>
@@ -157,7 +142,6 @@
           <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
         </div>
 
-        <!-- ตาราง TOP 5 LEADERBOARD สรุป -->
         <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-2.5 text-left shadow-inner">
           <h3 class="text-xs font-bold text-yellow-400 mb-1.5 flex items-center justify-between">
             <span>🏆 5 อันดับสูงสุดล่าสุด</span>
@@ -201,14 +185,10 @@
 
     const ADMIN_PASSWORD = "1234";
 
-    // --- AUDIO SYSTEM (ROYALTY-FREE CDN AUDIO) ---
-    // ช่วงที่ 1: Lofi Chill Beat (หน้าแรก / เช็กกล้อง / สรุปผล)
+    // --- AUDIO SYSTEM ---
     const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
-    
-    // ช่วงที่ 2: Upbeat Drum & Bass (ระหว่างเล่นเกม 60s)
     const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_51a37c56d2.mp3?filename=fast-drum-and-bass-112192.mp3");
     
-    // SFX Effects
     const audioSfxCollect = new Audio("https://cdn.pixabay.com/download/audio/2021/08/09/audio_0e2b4f9821.mp3?filename=coin-collect-retro-8-bit-sound-effect-145251.mp3");
     const audioSfxHit = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2691e8436.mp3?filename=hit-sound-effect-124476.mp3");
     const audioSfxCountdown = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_106b0d9129.mp3?filename=beep-short-113540.mp3");
@@ -216,10 +196,7 @@
 
     audioBgmLanding.loop = true; audioBgmLanding.volume = 0.25;
     audioBgmGame.loop = true; audioBgmGame.volume = 0.35;
-    
-    audioSfxCollect.volume = 0.6;
-    audioSfxHit.volume = 0.6;
-    audioSfxCountdown.volume = 0.5;
+    audioSfxCollect.volume = 0.6; audioSfxHit.volume = 0.6; audioSfxCountdown.volume = 0.5;
 
     let isMuted = false;
     let audioUnlocked = false;
@@ -405,7 +382,7 @@
           const nose = results.multiFaceLandmarks[0][1];
           const x = (1.0 - nose.x) * previewCanvas.width;
           const y = nose.y * previewCanvas.height;
-          drawFullSafetyHelmet(pCtx, x, y - 30, 1.2);
+          drawModern3DSafetyHelmet(pCtx, x, y - 35, 1.25);
         }
         pCtx.restore();
       }
@@ -462,7 +439,7 @@
 
       audioBgmLanding.pause();
       uiOverlay.classList.add('hidden');
-      toggleAudioBtn.classList.add('hidden'); // ซ่อนปุ่มเสียงระหว่างเล่นเกม 100%
+      toggleAudioBtn.classList.add('hidden');
 
       gameState = 'COUNTDOWN';
       countdownVal = 5;
@@ -513,7 +490,7 @@
         audioBgmLanding.play().catch(() => {});
       }
 
-      toggleAudioBtn.classList.remove('hidden'); // แสดงปุ่มเสียงในหน้าสรุปผล
+      toggleAudioBtn.classList.remove('hidden');
       uiOverlay.classList.remove('hidden');
       setupScreen.classList.add('hidden');
       gameOverScreen.classList.remove('hidden');
@@ -662,14 +639,14 @@
       gameOverList.innerHTML = htmlContent;
     }
 
-    // --- GAME ENGINE ---
+    // --- GAME ENGINE LOGIC ---
     function updateGameLogic() {
       roadOffset = (roadOffset + roadSpeed) % 60;
       score += 1;
 
       if (Math.random() < 0.042) {
         const randomLane = Math.floor(Math.random() * 4);
-        const isBonus = Math.random() < 0.15;
+        const isBonus = Math.random() < 0.16;
         
         let type = 'POTHOLE';
         if (isBonus) {
@@ -705,20 +682,26 @@
       }
     }
 
+    // --- MODERN 3D GRAPHICS DRAWING ENGINE ---
     function drawGameScene() {
-      ctx.fillStyle = "#1e3a1e";
+      // Grass Landscape Background
+      ctx.fillStyle = "#142d14";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
-      drawRoadsideVillage();
+      // Modern 3D Roadside Trees
+      drawModern3DTrees();
 
+      // Modern Asphalt Road Body
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
-      drawRoadCurb();
+      // 3D Curb Border (White & Red)
+      drawModern3DRoadCurb();
 
-      ctx.strokeStyle = "#94a3b8";
+      // Road Lane Lines
+      ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 4;
-      ctx.setLineDash([30, 30]);
+      ctx.setLineDash([35, 35]);
       ctx.lineDashOffset = -roadOffset;
 
       for (let i = 1; i < 4; i++) {
@@ -729,20 +712,23 @@
       }
       ctx.setLineDash([]);
 
+      // Draw Modern 3D Hazards & Bonus Items
       obstacles.forEach(obs => {
         const x = laneCenters[obs.lane];
-        if (obs.type === 'POTHOLE') draw3DPothole(x, obs.y);
-        else if (obs.type === 'WOOD_LOG') drawWoodLog(x, obs.y);
-        else if (obs.type === 'STONE_PILE') drawStonePile(x, obs.y);
-        else if (obs.type === 'GIFT') drawGiftBonus(x, obs.y);
-        else if (obs.type === 'MONEY') drawMoneyBonus(x, obs.y);
-        else if (obs.type === 'CEMENT') drawCementBonus(x, obs.y);
+        if (obs.type === 'POTHOLE') drawModern3DPothole(x, obs.y);
+        else if (obs.type === 'WOOD_LOG') drawModern3DWoodLog(x, obs.y);
+        else if (obs.type === 'STONE_PILE') drawModern3DStonePile(x, obs.y);
+        else if (obs.type === 'GIFT') drawModern3DGiftBonus(x, obs.y);
+        else if (obs.type === 'MONEY') drawModern3DMoneyBonus(x, obs.y);
+        else if (obs.type === 'CEMENT') drawModern3DCementBonus(x, obs.y);
       });
 
+      // Player Avatar with 3D Safety Helmet
       const playerX = laneCenters[currentLane];
       const playerY = 800;
       drawPlayerWithHelmet(playerX, playerY);
 
+      // HUD Score Glass Panel Bar
       ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
       ctx.fillRect(20, 20, canvasElement.width - 40, 65);
       ctx.strokeStyle = "#facc15";
@@ -759,110 +745,176 @@
       ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
-    function drawCountdownOverlay() {
-      ctx.fillStyle = "rgba(3, 7, 18, 0.75)";
-      ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+    // --- 3D ENVIRONMENT ART ENGINE ---
+    function drawModern3DTrees() {
+      const treeSpacing = 160;
+      const startY = (roadOffset % treeSpacing) - treeSpacing;
 
-      ctx.shadowColor = "#facc15";
-      ctx.shadowBlur = 25;
-      ctx.fillStyle = "#0f172a";
-      ctx.beginPath();
-      ctx.arc(canvasElement.width / 2, canvasElement.height / 2, 85, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#facc15";
-      ctx.lineWidth = 6;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = "#facc15";
-      ctx.font = "900 80px Kanit";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      
-      const textToShow = countdownVal > 0 ? countdownVal : "GO!";
-      ctx.fillText(textToShow, canvasElement.width / 2, canvasElement.height / 2);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 18px Kanit";
-      ctx.fillText("เตรียมตัว! ลองเอียงศีรษะเข้าเลน", canvasElement.width / 2, canvasElement.height / 2 + 130);
-      ctx.textBaseline = "alphabetic";
-    }
-
-    function drawRoadsideVillage() {
-      ctx.fillStyle = "#3b4252";
-      for (let y = (roadOffset % 160) - 160; y < canvasElement.height; y += 160) {
-        ctx.fillRect(10, y, 40, 50);
-        ctx.fillStyle = "#facc15"; ctx.fillRect(20, y + 15, 10, 10); ctx.fillStyle = "#3b4252";
-        ctx.fillRect(canvasElement.width - 50, y + 60, 40, 45);
-        ctx.fillStyle = "#ef4444"; ctx.fillRect(canvasElement.width - 50, y + 50, 40, 10); ctx.fillStyle = "#3b4252";
+      for (let y = startY; y < canvasElement.height + 60; y += treeSpacing) {
+        // Left Side Tree
+        drawIsometric3DTree(25, y);
+        // Right Side Tree
+        drawIsometric3DTree(canvasElement.width - 25, y + 40);
       }
     }
 
-    function drawRoadCurb() {
+    function drawIsometric3DTree(x, y) {
+      ctx.save();
+      // Trunk Shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+      ctx.beginPath(); ctx.ellipse(x + 4, y + 22, 14, 6, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Tree Trunk 3D
+      ctx.fillStyle = "#5c3a21";
+      ctx.fillRect(x - 5, y + 2, 10, 20);
+
+      // 3D Foliage Layer 1 (Base Shadow Layer)
+      ctx.fillStyle = "#15803d";
+      ctx.beginPath(); ctx.arc(x, y - 6, 26, 0, Math.PI * 2); ctx.fill();
+
+      // 3D Foliage Layer 2 (Highlight Top Dome)
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath(); ctx.arc(x - 4, y - 12, 20, 0, Math.PI * 2); ctx.fill();
+
+      // Top Soft Gloss
+      ctx.fillStyle = "#86efac";
+      ctx.beginPath(); ctx.arc(x - 8, y - 16, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    function drawModern3DRoadCurb() {
       const curbHeight = 40;
       let isRed = false;
       for (let y = (roadOffset % (curbHeight * 2)) - (curbHeight * 2); y < canvasElement.height; y += curbHeight) {
-        ctx.fillStyle = isRed ? "#ef4444" : "#ffffff";
+        // Left Curb 3D
+        ctx.fillStyle = isRed ? "#ef4444" : "#f8fafc";
         ctx.fillRect(roadLeftX - 12, y, 12, curbHeight);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+        ctx.fillRect(roadLeftX - 3, y, 3, curbHeight);
+
+        // Right Curb 3D
+        ctx.fillStyle = isRed ? "#ef4444" : "#f8fafc";
         ctx.fillRect(roadLeftX + laneWidth * 4, y, 12, curbHeight);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+        ctx.fillRect(roadLeftX + laneWidth * 4, y, 3, curbHeight);
+
         isRed = !isRed;
       }
     }
 
-    function draw3DPothole(x, y) {
-      ctx.fillStyle = "#020617";
-      ctx.beginPath(); ctx.ellipse(x, y + 6, 42, 24, 0, 0, Math.PI * 2); ctx.fill();
+    // --- MODERN 3D HAZARDS & BONUS ITEMS ---
+    function drawModern3DPothole(x, y) {
+      ctx.save();
+      // Outer Cracked Hole Rim
       ctx.fillStyle = "#0f172a";
-      ctx.beginPath(); ctx.ellipse(x, y, 40, 22, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(x, y + 4, 44, 24, 0, 0, Math.PI * 2); ctx.fill();
 
-      ctx.strokeStyle = "#dc2626"; ctx.lineWidth = 2; ctx.beginPath();
-      ctx.moveTo(x - 40, y); ctx.lineTo(x - 55, y - 8);
-      ctx.moveTo(x + 40, y); ctx.lineTo(x + 55, y + 10);
+      // Inner Deep Shadow Hole
+      ctx.fillStyle = "#020617";
+      ctx.beginPath(); ctx.ellipse(x, y, 40, 20, 0, 0, Math.PI * 2); ctx.fill();
+
+      // 3D Red Warning Rim
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 3.5; ctx.stroke();
+
+      // Asphalt Crack Lines
+      ctx.strokeStyle = "#f87171"; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.moveTo(x - 40, y); ctx.lineTo(x - 56, y - 10);
+      ctx.moveTo(x + 40, y); ctx.lineTo(x + 58, y + 12);
       ctx.stroke();
+      ctx.restore();
     }
 
-    function drawWoodLog(x, y) {
+    function drawModern3DWoodLog(x, y) {
+      ctx.save();
+      // Ground Soft Shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.beginPath(); ctx.ellipse(x, y + 14, 40, 10, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Timber Main Body 3D
       ctx.fillStyle = "#78350f";
-      ctx.beginPath(); ctx.roundRect(x - 35, y - 12, 70, 24, 6); ctx.fill();
-      ctx.strokeStyle = "#451a03"; ctx.lineWidth = 3; ctx.stroke();
-      ctx.fillStyle = "#b45309"; ctx.beginPath(); ctx.arc(x - 28, y, 8, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x - 38, y - 12, 76, 24, 8); ctx.fill();
+
+      // Timber Texture Grain
+      ctx.fillStyle = "#92400e";
+      ctx.fillRect(x - 20, y - 8, 40, 16);
+
+      // 3D Cut Ends (Wood Rings)
+      ctx.fillStyle = "#d97706";
+      ctx.beginPath(); ctx.ellipse(x - 30, y, 7, 10, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + 30, y, 7, 10, 0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.strokeStyle = "#451a03"; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.restore();
     }
 
-    function drawStonePile(x, y) {
-      ctx.fillStyle = "#64748b";
-      ctx.beginPath(); ctx.arc(x - 12, y + 5, 16, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 12, y + 5, 16, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#94a3b8";
-      ctx.beginPath(); ctx.arc(x, y - 8, 18, 0, Math.PI*2); ctx.fill();
-      ctx.strokeStyle = "#334155"; ctx.lineWidth = 2; ctx.stroke();
+    function drawModern3DStonePile(x, y) {
+      ctx.save();
+      // Base Shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+      ctx.beginPath(); ctx.ellipse(x, y + 12, 32, 10, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Rocks Cluster Isometric 3D
+      ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(x - 14, y + 4, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#64748b"; ctx.beginPath(); ctx.arc(x + 12, y + 4, 15, 0, Math.PI * 2); ctx.fill();
+      
+      // Top Pyramid Rock
+      ctx.fillStyle = "#94a3b8"; ctx.beginPath(); ctx.arc(x, y - 8, 17, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); ctx.arc(x - 4, y - 12, 7, 0, Math.PI * 2); ctx.fill();
+
+      ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2; ctx.stroke();
+      ctx.restore();
     }
 
-    function drawGiftBonus(x, y) {
-      ctx.shadowColor = "#facc15"; ctx.shadowBlur = 10;
+    function drawModern3DGiftBonus(x, y) {
+      ctx.save();
+      ctx.shadowColor = "#facc15"; ctx.shadowBlur = 16;
+      
+      // Box 3D
       ctx.fillStyle = "#ef4444"; ctx.fillRect(x - 18, y - 18, 36, 36);
-      ctx.fillStyle = "#facc15"; ctx.fillRect(x - 5, y - 18, 10, 36); ctx.fillRect(x - 18, y - 5, 36, 10);
-      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#dc2626"; ctx.fillRect(x - 18, y, 36, 18);
+
+      // Gold Ribbon
+      ctx.fillStyle = "#facc15"; 
+      ctx.fillRect(x - 5, y - 18, 10, 36);
+      ctx.fillRect(x - 18, y - 5, 36, 10);
+      
+      ctx.restore();
     }
 
-    function drawMoneyBonus(x, y) {
-      ctx.shadowColor = "#22c55e"; ctx.shadowBlur = 10;
-      ctx.fillStyle = "#16a34a"; ctx.beginPath(); ctx.arc(x, y + 2, 18, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = "#facc15"; ctx.font = "bold 16px Kanit"; ctx.textAlign = "center"; ctx.fillText("฿", x, y + 7);
-      ctx.shadowBlur = 0;
+    function drawModern3DMoneyBonus(x, y) {
+      ctx.save();
+      ctx.shadowColor = "#eab308"; ctx.shadowBlur = 18;
+
+      // Outer Gold Rim 3D
+      ctx.fillStyle = "#ca8a04"; ctx.beginPath(); ctx.arc(x, y + 2, 20, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#eab308"; ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI * 2); ctx.fill();
+      
+      // Inner Gloss Ring
+      ctx.fillStyle = "#fef08a"; ctx.beginPath(); ctx.arc(x - 3, y - 3, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.fill();
+
+      // Thai Baht Symbol 3D
+      ctx.fillStyle = "#854d0e"; ctx.font = "900 18px Kanit"; ctx.textAlign = "center"; ctx.fillText("฿", x, y + 6);
+      ctx.restore();
     }
 
-    function drawCementBonus(x, y) {
-      ctx.shadowColor = "#f59e0b"; ctx.shadowBlur = 10;
-      ctx.fillStyle = "#d97706"; ctx.beginPath(); ctx.roundRect(x - 18, y - 18, 36, 36, 6); ctx.fill();
-      ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px Kanit"; ctx.textAlign = "center"; ctx.fillText("ปูน", x, y + 4);
-      ctx.shadowBlur = 0;
+    function drawModern3DCementBonus(x, y) {
+      ctx.save();
+      ctx.shadowColor = "#f97316"; ctx.shadowBlur = 16;
+
+      // 3D Cement Bag
+      ctx.fillStyle = "#ea580c"; ctx.beginPath(); ctx.roundRect(x - 20, y - 20, 40, 40, 8); ctx.fill();
+      ctx.fillStyle = "#c2410c"; ctx.beginPath(); ctx.roundRect(x - 20, y, 40, 20, 8); ctx.fill();
+
+      ctx.fillStyle = "#ffffff"; ctx.font = "bold 12px Kanit"; ctx.textAlign = "center"; ctx.fillText("ปูน 3D", x, y + 4);
+      ctx.restore();
     }
 
+    // --- PLAYER AVATAR & 3D HELMET ---
     function drawPlayerWithHelmet(x, y) {
       ctx.save();
-      ctx.fillStyle = "#2563eb";
-      ctx.beginPath(); ctx.arc(x, y, 28, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2563eb"; ctx.beginPath(); ctx.arc(x, y, 28, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = "#facc15"; ctx.lineWidth = 3; ctx.stroke();
 
       if (playerImageObject && playerImageObject.complete) {
@@ -872,23 +924,57 @@
         ctx.restore();
       }
 
-      drawFullSafetyHelmet(ctx, x, y - 22, 1.0);
+      drawModern3DSafetyHelmet(ctx, x, y - 24, 1.0);
       ctx.restore();
     }
 
-    function drawFullSafetyHelmet(targetCtx, x, y, scale = 1.0) {
+    function drawModern3DSafetyHelmet(targetCtx, x, y, scale = 1.0) {
       targetCtx.save();
       targetCtx.translate(x, y);
       targetCtx.scale(scale, scale);
 
+      // Helmet Base Shadow 3D
+      targetCtx.fillStyle = "#a16207";
+      targetCtx.beginPath(); targetCtx.arc(0, 3, 26, Math.PI, 0); targetCtx.fill();
+
+      // Main Helmet Dome (Yellow)
       targetCtx.fillStyle = "#facc15";
       targetCtx.beginPath(); targetCtx.arc(0, 0, 26, Math.PI, 0); targetCtx.fill();
-      targetCtx.fillStyle = "#eab308"; targetCtx.fillRect(-6, -26, 12, 26);
+
+      // Center Ridge 3D
+      targetCtx.fillStyle = "#eab308"; targetCtx.fillRect(-5, -27, 10, 27);
+
+      // Silver Reflective Rim
+      targetCtx.fillStyle = "#e2e8f0"; targetCtx.fillRect(-22, -12, 44, 4);
+
+      // 3D Visor / Brim
       targetCtx.fillStyle = "#ca8a04";
-      targetCtx.beginPath(); targetCtx.roundRect(-34, -2, 68, 9, 4); targetCtx.fill();
-      targetCtx.fillStyle = "#ffffff"; targetCtx.fillRect(-12, -16, 24, 4);
+      targetCtx.beginPath(); targetCtx.roundRect(-32, -2, 64, 10, 4); targetCtx.fill();
+
+      // 3D Headlamp Light
+      targetCtx.fillStyle = "#38bdf8"; targetCtx.beginPath(); targetCtx.arc(0, -14, 5, 0, Math.PI * 2); targetCtx.fill();
 
       targetCtx.restore();
+    }
+
+    function drawCountdownOverlay() {
+      ctx.fillStyle = "rgba(3, 7, 18, 0.75)";
+      ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+      ctx.shadowColor = "#facc15"; ctx.shadowBlur = 25;
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath(); ctx.arc(canvasElement.width / 2, canvasElement.height / 2, 85, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#facc15"; ctx.lineWidth = 6; ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = "#facc15"; ctx.font = "900 80px Kanit"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      
+      const textToShow = countdownVal > 0 ? countdownVal : "GO!";
+      ctx.fillText(textToShow, canvasElement.width / 2, canvasElement.height / 2);
+
+      ctx.fillStyle = "#ffffff"; ctx.font = "bold 18px Kanit";
+      ctx.fillText("เตรียมตัว! ลองเอียงศีรษะเข้าเลน", canvasElement.width / 2, canvasElement.height / 2 + 130);
+      ctx.textBaseline = "alphabetic";
     }
 
     fetchLeaderboardData();
