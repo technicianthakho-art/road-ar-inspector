@@ -187,7 +187,6 @@
 
     const ADMIN_PASSWORD = "1234";
 
-    // --- DOM ELEMENTS ---
     const videoElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('gameCanvas');
     const ctx = canvasElement.getContext('2d');
@@ -202,8 +201,7 @@
     const gameOverScreen = document.getElementById('gameOverScreen');
     const adminModal = document.getElementById('adminModal');
 
-    // --- GAME STATE & VARIABLES ---
-    let gameState = 'LANDING'; // LANDING, SETUP, COUNTDOWN, PLAYING, GAMEOVER
+    let gameState = 'LANDING';
     let score = 0;
     let timeLeft = 60;
     let timerInterval = null;
@@ -213,9 +211,8 @@
     let playerName = 'คุณบอย';
     let playerPhotoBlob = null;
     let playerImageObject = null;
-    let cachedLeaderboardData = []; // เก็บ Data ตารางไว้ค้นหาชื่อ
+    let cachedLeaderboardData = [];
 
-    // Lane Settings
     const laneWidth = 95;
     const roadLeftX = (canvasElement.width - (laneWidth * 4)) / 2;
     const laneCenters = [
@@ -230,12 +227,10 @@
     let roadSpeed = 7;
     let baseRoadSpeed = 7;
     let roadOffset = 0;
-    
     let targetHeadX = 0.5;
     let smoothHeadX = 0.5;
     let currentStream = null;
 
-    // --- MEDIAPIPE FACE MESH ---
     const faceMesh = new FaceMesh({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
     });
@@ -249,7 +244,6 @@
 
     faceMesh.onResults(onFaceMeshResults);
 
-    // --- NAVIGATION SCREEN SWITCHER ---
     function goToLandingScreen() {
       gameState = 'LANDING';
       uiOverlay.classList.remove('hidden');
@@ -267,7 +261,6 @@
       initCameraDevices();
     }
 
-    // --- CAMERA MANAGEMENT ---
     async function initCameraDevices() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -368,7 +361,6 @@
       }
     }
 
-    // --- GAME CONTROLS & COUNTDOWN ---
     async function confirmAndStartGame() {
       const inputName = document.getElementById('playerNameInput').value.trim();
       if (!inputName) {
@@ -433,7 +425,6 @@
       uploadScoreAndFetchLeaderboard();
     }
 
-    // --- ADMIN RESET FUNCTIONS ---
     function openAdminModal() {
       document.getElementById('adminPasswordInput').value = '';
       adminModal.classList.remove('hidden');
@@ -465,7 +456,7 @@
       }
     }
 
-    // --- SUPABASE DATA HANDLER ---
+    // --- SUPABASE UPLOAD & FETCH ---
     async function uploadScoreAndFetchLeaderboard() {
       const listContainer = document.getElementById('gameOverLeaderboardList');
       listContainer.innerHTML = `<div class="text-xs text-yellow-400 animate-pulse text-center py-2">⏳ กำลังบันทึกคะแนน...</div>`;
@@ -475,8 +466,10 @@
       try {
         if (playerPhotoBlob) {
           const fileName = `player_${Date.now()}.jpg`;
-          const { error: storageErr } = await supabaseClient
+          const { data: storageData, error: storageErr } = await supabaseClient
             .storage.from('player-photos').upload(fileName, playerPhotoBlob);
+
+          if (storageErr) console.error("Storage Error:", storageErr);
 
           if (!storageErr) {
             const { data } = supabaseClient.storage.from('player-photos').getPublicUrl(fileName);
@@ -488,13 +481,15 @@
       }
 
       try {
-        await supabaseClient.from('leaderboard').insert([{
+        const { error: dbErr } = await supabaseClient.from('leaderboard').insert([{
           player_name: playerName,
           score: score,
           photo_url: photoUrl
         }]);
+
+        if (dbErr) console.error("Database Insert Error:", dbErr);
       } catch (dbErr) {
-        console.error("DB Insert Error:", dbErr);
+        console.error("DB Exception:", dbErr);
       }
 
       fetchLeaderboardData();
@@ -514,7 +509,7 @@
         
         renderLeaderboardUI(cachedLeaderboardData);
       } catch (err) {
-        console.error(err);
+        console.error("Fetch Error:", err);
       }
     }
 
@@ -536,7 +531,7 @@
       const landingList = document.getElementById('landingLeaderboardList');
       const gameOverList = document.getElementById('gameOverLeaderboardList');
 
-      const itemsToShow = isSearching ? dataList : dataList.slice(0, 5); // โชว์ Top 5 สวยๆ
+      const itemsToShow = isSearching ? dataList : dataList.slice(0, 5);
 
       if (itemsToShow.length === 0) {
         const emptyHtml = `<div class="text-xs text-slate-500 text-center py-3">ไม่พบข้อมูลผู้เล่น</div>`;
@@ -546,7 +541,6 @@
       }
 
       const htmlContent = itemsToShow.map((item, idx) => {
-        // ค้นหาอันดับจริงจาก Array ต้นฉบับ
         const realIndex = cachedLeaderboardData.findIndex(x => x.id === item.id);
         const rank = realIndex !== -1 ? realIndex + 1 : idx + 1;
 
@@ -568,7 +562,6 @@
       gameOverList.innerHTML = htmlContent;
     }
 
-    // --- GAME ENGINE LOGIC & DRAWING ---
     function updateGameLogic() {
       roadOffset = (roadOffset + roadSpeed) % 60;
       score += 1;
@@ -692,7 +685,6 @@
       ctx.textBaseline = "alphabetic";
     }
 
-    // --- ENVIRONMENT & HAZARD GRAPHICS ---
     function drawRoadsideVillage() {
       ctx.fillStyle = "#3b4252";
       for (let y = (roadOffset % 160) - 160; y < canvasElement.height; y += 160) {
@@ -796,7 +788,6 @@
       targetCtx.restore();
     }
 
-    // โหลดตารางคะแนนหน้าแรกตอนเปิดเว็บ
     fetchLeaderboardData();
   </script>
 </body>
