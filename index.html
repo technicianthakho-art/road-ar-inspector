@@ -18,8 +18,8 @@
     body { background-color: #030712; color: #f8fafc; overflow: hidden; }
     #webcam { display: none; }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.93);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
   </style>
@@ -35,11 +35,13 @@
     <!-- Canvas เกมหลัก -->
     <canvas id="gameCanvas" width="540" height="960" class="absolute inset-0 w-full h-full z-10"></canvas>
 
-    <!-- Overlay UI Screen -->
+    <!-- Overlay UI Screen (จัดการแสดงผลทุกหน้า) -->
     <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 glass-panel transition-all duration-300">
       
-      <!-- 1. หน้าทดสอบกล้อง & ลงทะเบียน -->
-      <div id="setupScreen" class="w-full flex flex-col items-center space-y-3 text-center">
+      <!-- ========================================== -->
+      <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard) -->
+      <!-- ========================================== -->
+      <div id="landingScreen" class="w-full flex flex-col items-center space-y-4 text-center my-auto">
         <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
           กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
         </div>
@@ -47,7 +49,43 @@
         <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow leading-tight">
           เกมสำรวจสายทาง กองช่าง<br/>อบต.ท่าก๊อ
         </h1>
-        <p class="text-slate-400 text-xs -mt-1">ลงทะเบียนพร้อมทดสอบกล้องก่อนเริ่มเล่น</p>
+        <p class="text-slate-400 text-xs -mt-1">ระบบตรวจสอบและรายงานสภาพสายทางดิจิทัล</p>
+
+        <!-- ตาราง TOP 5 LEADERBOARD + ช่องเสิร์ช -->
+        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 text-left shadow-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-yellow-400 flex items-center gap-1">
+              <span>🏆 5 อันดับสูงสุด</span>
+            </h3>
+            <span id="totalPlayersBadge" class="text-[10px] text-slate-500 font-medium">ผู้เล่นทั้งหมด 0 คน</span>
+          </div>
+
+          <!-- ช่องค้นหาชื่อผู้เล่น -->
+          <div class="relative">
+            <input type="text" id="searchPlayerInput" oninput="filterLeaderboard()" placeholder="🔍 ค้นหาชื่อผู้เล่น..." 
+                   class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg pl-3 pr-8 py-2 focus:ring-yellow-400 focus:border-yellow-400">
+          </div>
+
+          <!-- รายการตารางคะแนน -->
+          <div id="landingLeaderboardList" class="space-y-1.5 max-h-52 overflow-y-auto pr-1 text-xs">
+            <div class="text-slate-500 italic text-center py-4">กำลังดึงตารางคะแนน...</div>
+          </div>
+        </div>
+
+        <!-- ปุ่มเริ่มเล่นเกม -->
+        <button onclick="goToSetupScreen()" 
+                class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-lg py-3.5 px-6 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-2">
+          <span>🚀 ลงทะเบียนเข้าเล่นเกม</span>
+        </button>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- SCREEN 2: หน้าลงทะเบียน & เช็กกล้อง -->
+      <!-- ========================================== -->
+      <div id="setupScreen" class="w-full flex flex-col items-center space-y-3 text-center hidden my-auto">
+        <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
+        <p class="text-slate-400 text-xs -mt-1">ทดสอบกล้อง สวมหมวก AR และระบุชื่อก่อนเล่น</p>
 
         <!-- จอลองกล้อง Preview -->
         <div class="relative w-60 h-44 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-1">
@@ -72,14 +110,21 @@
                  class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 focus:ring-yellow-400 text-center">
         </div>
 
-        <!-- ปุ่มเริ่มเล่น -->
-        <button id="btnStartGame" onclick="confirmAndStartGame()" 
-                class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3 px-6 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-1">
-          <span>📸 บันทึกรูปหน้า & เริ่มสำรวจ</span>
-        </button>
+        <div class="flex gap-2 w-full max-w-xs pt-1">
+          <button onclick="goToLandingScreen()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl text-xs">
+            ⬅️ ย้อนกลับ
+          </button>
+          <button id="btnStartGame" onclick="confirmAndStartGame()" 
+                  class="w-2/3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-sm py-3 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1">
+            <span>📸 ถ่ายรูป & เริ่มเล่น</span>
+          </button>
+        </div>
       </div>
 
-      <!-- 2. หน้าสรุปผลหลังเล่นเสร็จ + TOP 10 LEADERBOARD -->
+
+      <!-- ========================================== -->
+      <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver) -->
+      <!-- ========================================== -->
       <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-3 text-center my-auto relative">
         
         <!-- Secret Admin Button -->
@@ -89,33 +134,34 @@
 
         <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
         
-        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-3 w-full max-w-xs flex items-center justify-between shadow-lg">
+        <!-- การ์ดแสดงผลผู้เล่น + รูปถ่ายหน้าจริง -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3.5 w-full max-w-xs flex items-center justify-between shadow-xl">
           <div class="text-left">
             <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">ผู้เล่น: -</div>
             <div id="resultScore" class="text-xl font-black text-yellow-400">0 คะแนน</div>
           </div>
-          <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow" src="" alt="Player"/>
+          <img id="resultPlayerImg" class="w-14 h-14 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
         </div>
 
-        <!-- ตาราง TOP 10 LEADERBOARD -->
-        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-xl p-3 text-left shadow-inner">
+        <!-- ตาราง TOP 5 LEADERBOARD สรุป -->
+        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-left shadow-inner">
           <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between">
-            <span>🏆 10 อันดับสูงสุด</span>
+            <span>🏆 5 อันดับสูงสุดล่าสุด</span>
           </h3>
-          <div id="leaderboardList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs">
+          <div id="gameOverLeaderboardList" class="space-y-1.5 max-h-44 overflow-y-auto pr-1 text-xs">
             <div class="text-slate-500 italic text-center py-2">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <button onclick="resetToSetup()" 
+        <button onclick="goToLandingScreen()" 
                 class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-xl transition-all active:scale-95 shadow-md">
-          🔄 กลับหน้าหลัก / เปลี่ยนผู้เล่น
+          🏠 กลับหน้าหลัก / หน้าตารางคะแนน
         </button>
       </div>
 
     </div>
 
-    <!-- 3. Modal รหัสผ่าน Admin -->
+    <!-- Modal รหัสผ่าน Admin -->
     <div id="adminModal" class="hidden absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6">
       <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-xs text-center space-y-4 shadow-2xl">
         <h3 class="text-lg font-bold text-yellow-400">🔒 ผู้ดูแลระบบ (Admin)</h3>
@@ -151,20 +197,23 @@
     const cameraStatusBadge = document.getElementById('cameraStatusBadge');
     
     const uiOverlay = document.getElementById('uiOverlay');
+    const landingScreen = document.getElementById('landingScreen');
     const setupScreen = document.getElementById('setupScreen');
     const gameOverScreen = document.getElementById('gameOverScreen');
     const adminModal = document.getElementById('adminModal');
 
     // --- GAME STATE & VARIABLES ---
-    let gameState = 'SETUP'; // SETUP, COUNTDOWN, PLAYING, GAMEOVER
+    let gameState = 'LANDING'; // LANDING, SETUP, COUNTDOWN, PLAYING, GAMEOVER
     let score = 0;
     let timeLeft = 60;
     let timerInterval = null;
     let countdownVal = 5;
     let countdownInterval = null;
+    
     let playerName = 'คุณบอย';
     let playerPhotoBlob = null;
     let playerImageObject = null;
+    let cachedLeaderboardData = []; // เก็บ Data ตารางไว้ค้นหาชื่อ
 
     // Lane Settings
     const laneWidth = 95;
@@ -182,7 +231,6 @@
     let baseRoadSpeed = 7;
     let roadOffset = 0;
     
-    // Multi-Point Head Tracking Filter
     let targetHeadX = 0.5;
     let smoothHeadX = 0.5;
     let currentStream = null;
@@ -200,6 +248,24 @@
     });
 
     faceMesh.onResults(onFaceMeshResults);
+
+    // --- NAVIGATION SCREEN SWITCHER ---
+    function goToLandingScreen() {
+      gameState = 'LANDING';
+      uiOverlay.classList.remove('hidden');
+      landingScreen.classList.remove('hidden');
+      setupScreen.classList.add('hidden');
+      gameOverScreen.classList.add('hidden');
+      fetchLeaderboardData();
+    }
+
+    function goToSetupScreen() {
+      gameState = 'SETUP';
+      landingScreen.classList.add('hidden');
+      setupScreen.classList.remove('hidden');
+      gameOverScreen.classList.add('hidden');
+      initCameraDevices();
+    }
 
     // --- CAMERA MANAGEMENT ---
     async function initCameraDevices() {
@@ -257,7 +323,6 @@
     }
 
     function onFaceMeshResults(results) {
-      // 1. จอลองกล้อง Preview ขั้นตอนลงทะเบียน
       if (gameState === 'SETUP') {
         pCtx.save();
         pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -272,28 +337,23 @@
         pCtx.restore();
       }
 
-      // 2. คำนวณตำแหน่งหัวแม่นยำสูง (Multi-Landmark Average)
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const landmarks = results.multiFaceLandmarks[0];
-        const nose = landmarks[1];      // จมูก
-        const forehead = landmarks[10]; // หน้าผาก
-        const chin = landmarks[152];    // คาง
+        const nose = landmarks[1];
+        const forehead = landmarks[10];
+        const chin = landmarks[152];
 
-        // ใช้ค่าเฉลี่ยพิกัด X จาก 3 จุดเพื่อความแม่นยำสูงสุด
         const avgX = (nose.x + forehead.x + chin.x) / 3.0;
-        targetHeadX = 1.0 - avgX; // Mirror
+        targetHeadX = 1.0 - avgX;
 
-        // Exponential Smooth Filter
         smoothHeadX = smoothHeadX * 0.72 + targetHeadX * 0.28;
 
-        // คำนวณเปลี่ยนเลนพร้อม Deadzone
         if (smoothHeadX < 0.38) currentLane = 0;
         else if (smoothHeadX < 0.50) currentLane = 1;
         else if (smoothHeadX < 0.62) currentLane = 2;
         else currentLane = 3;
       }
 
-      // 3. วาดฉากเกมและนับถอยหลัง
       if (gameState === 'COUNTDOWN' || gameState === 'PLAYING') {
         ctx.save();
         ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -302,9 +362,7 @@
         
         drawGameScene();
 
-        if (gameState === 'COUNTDOWN') {
-          drawCountdownOverlay();
-        }
+        if (gameState === 'COUNTDOWN') drawCountdownOverlay();
 
         ctx.restore();
       }
@@ -319,7 +377,6 @@
       }
       playerName = inputName;
 
-      // ถ่ายภาพหน้าผู้เล่น
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = 256;
       tempCanvas.height = 256;
@@ -330,7 +387,6 @@
       playerImageObject = new Image();
       playerImageObject.src = URL.createObjectURL(playerPhotoBlob);
 
-      // ปิด UI Overlay แล้วเข้าสู่โหมด COUNTDOWN 5s
       uiOverlay.classList.add('hidden');
       gameState = 'COUNTDOWN';
       countdownVal = 5;
@@ -377,12 +433,6 @@
       uploadScoreAndFetchLeaderboard();
     }
 
-    function resetToSetup() {
-      gameState = 'SETUP';
-      setupScreen.classList.remove('hidden');
-      gameOverScreen.classList.add('hidden');
-    }
-
     // --- ADMIN RESET FUNCTIONS ---
     function openAdminModal() {
       document.getElementById('adminPasswordInput').value = '';
@@ -402,16 +452,12 @@
 
       if (confirm("⚠️ คุณแน่ใจหรือไม่ที่จะล้างสถิติคะแนนทั้งหมด?")) {
         try {
-          const { error } = await supabaseClient
-            .from('leaderboard')
-            .delete()
-            .neq('id', 0);
-
+          const { error } = await supabaseClient.from('leaderboard').delete().neq('id', 0);
           if (error) throw error;
 
           alert("✅ ล้างสถิติคะแนนเรียบร้อยแล้ว!");
           closeAdminModal();
-          fetchTop10Leaderboard();
+          fetchLeaderboardData();
         } catch (err) {
           console.error(err);
           alert("❌ ไม่สามารถล้างสถิติได้ (เช็ก RLS Delete Policy)");
@@ -421,7 +467,7 @@
 
     // --- SUPABASE DATA HANDLER ---
     async function uploadScoreAndFetchLeaderboard() {
-      const listContainer = document.getElementById('leaderboardList');
+      const listContainer = document.getElementById('gameOverLeaderboardList');
       listContainer.innerHTML = `<div class="text-xs text-yellow-400 animate-pulse text-center py-2">⏳ กำลังบันทึกคะแนน...</div>`;
 
       let photoUrl = null;
@@ -451,40 +497,75 @@
         console.error("DB Insert Error:", dbErr);
       }
 
-      fetchTop10Leaderboard();
+      fetchLeaderboardData();
     }
 
-    async function fetchTop10Leaderboard() {
-      const listContainer = document.getElementById('leaderboardList');
+    async function fetchLeaderboardData() {
       try {
-        const { data: top10, error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('leaderboard')
           .select('*')
-          .order('score', { ascending: false })
-          .limit(10);
+          .order('score', { ascending: false });
 
         if (error) throw error;
 
-        if (top10 && top10.length > 0) {
-          listContainer.innerHTML = top10.map((item, idx) => `
-            <div class="flex items-center justify-between bg-slate-900/90 p-1.5 rounded border border-slate-800 shadow-sm">
-              <div class="flex items-center gap-2 overflow-hidden">
-                <span class="font-black text-xs ${idx === 0 ? 'text-yellow-400' : (idx === 1 ? 'text-slate-300' : (idx === 2 ? 'text-amber-600' : 'text-slate-500'))}">
-                  #${idx + 1}
-                </span>
-                ${item.photo_url ? `<img src="${item.photo_url}" class="w-7 h-7 rounded-full object-cover border border-yellow-500/50 shrink-0"/>` : '<div class="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400">👤</div>'}
-                <span class="font-medium text-slate-200 text-xs truncate">${item.player_name || 'ผู้เล่นไร้นาม'}</span>
-              </div>
-              <span class="font-bold text-yellow-400 text-xs ml-1 shrink-0">${item.score} pt</span>
-            </div>
-          `).join('');
-        } else {
-          listContainer.innerHTML = `<div class="text-xs text-slate-400 text-center py-2">ยังไม่มีสถิติคะแนน</div>`;
-        }
+        cachedLeaderboardData = data || [];
+        document.getElementById('totalPlayersBadge').innerText = `ผู้เล่นทั้งหมด ${cachedLeaderboardData.length} คน`;
+        
+        renderLeaderboardUI(cachedLeaderboardData);
       } catch (err) {
         console.error(err);
-        listContainer.innerHTML = `<div class="text-xs text-red-400 text-center py-2">ไม่สามารถโหลดสถิติได้</div>`;
       }
+    }
+
+    function filterLeaderboard() {
+      const query = document.getElementById('searchPlayerInput').value.toLowerCase().trim();
+      if (!query) {
+        renderLeaderboardUI(cachedLeaderboardData);
+        return;
+      }
+
+      const filtered = cachedLeaderboardData.filter(item => 
+        (item.player_name || '').toLowerCase().includes(query)
+      );
+
+      renderLeaderboardUI(filtered, true);
+    }
+
+    function renderLeaderboardUI(dataList, isSearching = false) {
+      const landingList = document.getElementById('landingLeaderboardList');
+      const gameOverList = document.getElementById('gameOverLeaderboardList');
+
+      const itemsToShow = isSearching ? dataList : dataList.slice(0, 5); // โชว์ Top 5 สวยๆ
+
+      if (itemsToShow.length === 0) {
+        const emptyHtml = `<div class="text-xs text-slate-500 text-center py-3">ไม่พบข้อมูลผู้เล่น</div>`;
+        landingList.innerHTML = emptyHtml;
+        gameOverList.innerHTML = emptyHtml;
+        return;
+      }
+
+      const htmlContent = itemsToShow.map((item, idx) => {
+        // ค้นหาอันดับจริงจาก Array ต้นฉบับ
+        const realIndex = cachedLeaderboardData.findIndex(x => x.id === item.id);
+        const rank = realIndex !== -1 ? realIndex + 1 : idx + 1;
+
+        return `
+          <div class="flex items-center justify-between bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 shadow-sm">
+            <div class="flex items-center gap-2 overflow-hidden">
+              <span class="font-black text-xs min-w-[20px] text-center ${rank === 1 ? 'text-yellow-400' : (rank === 2 ? 'text-slate-300' : (rank === 3 ? 'text-amber-600' : 'text-slate-500'))}">
+                #${rank}
+              </span>
+              ${item.photo_url ? `<img src="${item.photo_url}" class="w-8 h-8 rounded-full object-cover border border-yellow-500/50 shrink-0 shadow"/>` : '<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 shrink-0">👤</div>'}
+              <span class="font-medium text-slate-200 text-xs truncate">${item.player_name || 'ผู้เล่นไร้นาม'}</span>
+            </div>
+            <span class="font-bold text-yellow-400 text-xs ml-1 shrink-0">${item.score} pt</span>
+          </div>
+        `;
+      }).join('');
+
+      landingList.innerHTML = htmlContent;
+      gameOverList.innerHTML = htmlContent;
     }
 
     // --- GAME ENGINE LOGIC & DRAWING ---
@@ -529,13 +610,11 @@
     }
 
     function drawGameScene() {
-      // 1. ฉากทัศนียภาพสองข้างทาง
       ctx.fillStyle = "#1e3a1e";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
       drawRoadsideVillage();
 
-      // 2. ถนนแนวตั้ง 4 เลน
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
@@ -554,7 +633,6 @@
       }
       ctx.setLineDash([]);
 
-      // 3. วาดอุปสรรค
       obstacles.forEach(obs => {
         const x = laneCenters[obs.lane];
         if (obs.type === 'POTHOLE') draw3DPothole(x, obs.y);
@@ -565,12 +643,10 @@
         else if (obs.type === 'CEMENT') drawCementBonus(x, obs.y);
       });
 
-      // 4. วาดตัวละครผู้เล่น
       const playerX = laneCenters[currentLane];
       const playerY = 800;
       drawPlayerWithHelmet(playerX, playerY);
 
-      // 5. HUD คะแนน และ เวลา
       ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
       ctx.fillRect(20, 20, canvasElement.width - 40, 65);
       ctx.strokeStyle = "#facc15";
@@ -587,12 +663,10 @@
       ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
-    // --- DRAW COUNTDOWN OVERLAY ---
     function drawCountdownOverlay() {
       ctx.fillStyle = "rgba(3, 7, 18, 0.75)";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
-      // วงกลมเอฟเฟกต์เรืองแสง
       ctx.shadowColor = "#facc15";
       ctx.shadowBlur = 25;
       ctx.fillStyle = "#0f172a";
@@ -604,7 +678,6 @@
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // ข้อความนับถอยหลัง
       ctx.fillStyle = "#facc15";
       ctx.font = "900 80px Kanit";
       ctx.textAlign = "center";
@@ -613,14 +686,13 @@
       const textToShow = countdownVal > 0 ? countdownVal : "GO!";
       ctx.fillText(textToShow, canvasElement.width / 2, canvasElement.height / 2);
 
-      // ข้อความบอกผู้เล่นให้ลองทดสอบขยับหัว
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 18px Kanit";
       ctx.fillText("เตรียมตัว! ลองเอียงศีรษะเข้าเลน", canvasElement.width / 2, canvasElement.height / 2 + 130);
-      ctx.textBaseline = "alphabetic"; // Reset
+      ctx.textBaseline = "alphabetic";
     }
 
-    // --- ENVIRONMENT GRAPHICS ---
+    // --- ENVIRONMENT & HAZARD GRAPHICS ---
     function drawRoadsideVillage() {
       ctx.fillStyle = "#3b4252";
       for (let y = (roadOffset % 160) - 160; y < canvasElement.height; y += 160) {
@@ -642,7 +714,6 @@
       }
     }
 
-    // --- HAZARD & BONUS DRAWING FUNCTIONS ---
     function draw3DPothole(x, y) {
       ctx.fillStyle = "#020617";
       ctx.beginPath(); ctx.ellipse(x, y + 6, 42, 24, 0, 0, Math.PI * 2); ctx.fill();
@@ -725,7 +796,8 @@
       targetCtx.restore();
     }
 
-    initCameraDevices();
+    // โหลดตารางคะแนนหน้าแรกตอนเปิดเว็บ
+    fetchLeaderboardData();
   </script>
 </body>
 </html>
