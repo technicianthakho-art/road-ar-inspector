@@ -201,30 +201,46 @@
 
     const ADMIN_PASSWORD = "1234";
 
-    // --- AUDIO SYSTEM (UPDATED DIRECT MP3 CDN) ---
-    // ช่วงที่ 1: Lofi Chill Lounge (หน้าแรก / เช็กกล้อง / สรุปผล)
-    const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
+    // --- WEB AUDIO API & DIRECT AUDIO CDN SYSTEM ---
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // ช่วงที่ 1: Mid-Tempo Electro Groove (หน้าแรก / เช็กกล้อง / สรุปผล) - สดใส ไม่หนืด
+    const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a70514.mp3?filename=retro-arcade-game-116087.mp3");
     
-    // ช่วงที่ 2: Upbeat Action Synthwave (ระหว่างเล่นเกม 60s)
-    const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a70514.mp3?filename=retro-arcade-game-116087.mp3");
+    // ช่วงที่ 2: Upbeat Action Synthwave (ระหว่างเล่นเกม 60s) - บีตเร้าใจ ตื่นเต้น
+    const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_51a37c56d2.mp3?filename=fast-drum-and-bass-112192.mp3");
     
     // SFX Effects
     const audioSfxCollect = new Audio("https://cdn.pixabay.com/download/audio/2021/08/09/audio_0e2b4f9821.mp3?filename=coin-collect-retro-8-bit-sound-effect-145251.mp3");
     const audioSfxHit = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2691e8436.mp3?filename=hit-sound-effect-124476.mp3");
-    const audioSfxCountdown = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_106b0d9129.mp3?filename=beep-short-113540.mp3");
     const audioSfxWhistle = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_a0a52d37c8.mp3?filename=whistle-blow-113542.mp3");
 
-    audioBgmLanding.loop = true; audioBgmLanding.volume = 0.30;
-    audioBgmGame.loop = true; audioBgmGame.volume = 0.40;
-    audioSfxCollect.volume = 0.6; audioSfxHit.volume = 0.6; audioSfxCountdown.volume = 0.6;
+    // Audio Preload Configuration
+    audioBgmLanding.preload = "auto";
+    audioBgmGame.preload = "auto";
+    audioBgmLanding.loop = true; audioBgmLanding.volume = 0.35;
+    audioBgmGame.loop = true; audioBgmGame.volume = 0.45;
+    audioSfxCollect.volume = 0.6; audioSfxHit.volume = 0.6;
 
     let isMuted = false;
     let audioUnlocked = false;
 
     function unlockAudioAutoplay() {
+      getAudioContext();
       if (!audioUnlocked) {
         audioUnlocked = true;
         if (gameState === 'LANDING' && !isMuted) {
+          audioBgmLanding.currentTime = 0;
           audioBgmLanding.play().catch(() => {});
         }
       }
@@ -237,7 +253,6 @@
       audioBgmGame.muted = isMuted;
       audioSfxCollect.muted = isMuted;
       audioSfxHit.muted = isMuted;
-      audioSfxCountdown.muted = isMuted;
       audioSfxWhistle.muted = isMuted;
 
       document.getElementById('toggleAudioBtn').innerText = isMuted ? "🔇" : "🔊";
@@ -247,6 +262,29 @@
       if (!isMuted && audioObj) {
         audioObj.currentTime = 0;
         audioObj.play().catch(() => {});
+      }
+    }
+
+    // Web Audio API Synth Oscillator สำหรับเสียงนับถอยหลัง (ดังชัวร์ 100%)
+    function playBeepSound(freq = 880, duration = 0.15, type = 'sine') {
+      if (isMuted) return;
+      try {
+        const ctxAudio = getAudioContext();
+        const osc = ctxAudio.createOscillator();
+        const gain = ctxAudio.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctxAudio.currentTime);
+        gain.gain.setValueAtTime(0.3, ctxAudio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctxAudio.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctxAudio.destination);
+
+        osc.start();
+        osc.stop(ctxAudio.currentTime + duration);
+      } catch (e) {
+        console.warn("Synth audio error:", e);
       }
     }
 
@@ -373,7 +411,7 @@
         videoElement.srcObject = currentStream;
         await videoElement.play();
         cameraStatusBadge.innerText = "🟢 กล้องพร้อมทำงาน";
-        cameraStatusBadge.className = "absolute top-2 left-2 bg-green-950/90 border border-green-500/50 px-2 py-0.5 rounded text-[10px] text-green-400 font-medium";
+        cameraStatusBadge.className = "absolute top-2 left-2 bg-green-950/90 border border-green-500/50 px-2.5 py-1 rounded-md text-xs text-green-400 font-medium";
         
         processVideoFrame();
       } catch (err) {
@@ -459,7 +497,7 @@
 
       audioBgmLanding.pause();
       uiOverlay.classList.add('hidden');
-      toggleAudioBtn.classList.add('hidden');
+      toggleAudioBtn.classList.add('hidden'); // ซ่อนปุ่มเสียงช่วงเล่นเกม 100%
 
       gameState = 'COUNTDOWN';
       countdownVal = 5;
@@ -468,14 +506,15 @@
       roadSpeed = baseRoadSpeed;
       obstacles = [];
 
-      playSfx(audioSfxCountdown);
+      playBeepSound(600, 0.15, 'sine'); // เสียงนับถอยหลังครั้งแรก
 
       if (countdownInterval) clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         countdownVal--;
         if (countdownVal > 0) {
-          playSfx(audioSfxCountdown);
+          playBeepSound(600, 0.15, 'sine');
         } else {
+          playBeepSound(1200, 0.35, 'square'); // เสียง "ปี้ด!" สัญญาณปล่อยตัว GO!
           clearInterval(countdownInterval);
           startActualGameplay();
         }
@@ -510,7 +549,7 @@
         audioBgmLanding.play().catch(() => {});
       }
 
-      toggleAudioBtn.classList.remove('hidden');
+      toggleAudioBtn.classList.remove('hidden'); // แสดงปุ่มเสียงหน้าสรุปผล
       uiOverlay.classList.remove('hidden');
       setupScreen.classList.add('hidden');
       gameOverScreen.classList.remove('hidden');
@@ -767,7 +806,7 @@
 
     // --- ADJUSTED SPARSE TREES (เว้นระยะกว้าง 480px ไม่เวียนหัว) ---
     function drawSparseModern3DTrees() {
-      const treeSpacing = 480; // เพิ่มระยะห่างให้กว้างขึ้น 3 เท่า
+      const treeSpacing = 480;
       const startY = ((roadOffset * 0.4) % treeSpacing) - treeSpacing;
 
       for (let y = startY; y < canvasElement.height + 100; y += treeSpacing) {
