@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROAD MASTER AR : สายทางไร้หลุม</title>
+  <title>โรดมาสเตอร์ (Rose Master)</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client CDN -->
@@ -15,21 +15,18 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;800&display=swap');
     * { font-family: 'Kanit', sans-serif; user-select: none; }
-    body { background-color: #090d16; color: #f8fafc; overflow: hidden; }
+    body { background-color: #030712; color: #f8fafc; overflow: hidden; }
     #webcam { display: none; }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.90);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .neon-border {
-      box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
     }
   </style>
 </head>
 <body class="w-screen h-screen flex items-center justify-center p-0 m-0 bg-slate-950">
 
-  <!-- Container หลัก บังคับแนวตั้ง 9:16 Full Screen Vertical -->
+  <!-- Container หลัก แนวตั้ง 9:16 Full Screen Vertical -->
   <div class="relative w-full h-full max-w-[540px] max-h-[960px] bg-slate-900 overflow-hidden flex flex-col justify-between shadow-2xl border-x border-slate-800">
     
     <!-- Hidden Webcam Video -->
@@ -38,30 +35,30 @@
     <!-- Canvas เกมหลัก -->
     <canvas id="gameCanvas" width="540" height="960" class="absolute inset-0 w-full h-full z-10"></canvas>
 
-    <!-- Overlay UI Screen (จัดการหน้าลงทะเบียน / สรุปคะแนน) -->
+    <!-- Overlay UI Screen (หน้าลงทะเบียน / สรุปคะแนน) -->
     <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 glass-panel transition-all duration-300">
       
-      <!-- 1. หน้าทดสอบกล้อง & ลงทะเบียน (Pre-Game Registration) -->
+      <!-- 1. หน้าทดสอบกล้อง & ลงทะเบียน -->
       <div id="setupScreen" class="w-full flex flex-col items-center space-y-4 text-center">
-        <div class="bg-yellow-500/10 border border-yellow-500/30 px-4 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider uppercase">
-          AR Inspector Game
+        <div class="bg-yellow-500/20 border border-yellow-500/40 px-4 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
+          เกมสำรวจสายทาง
         </div>
-        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow">
-          ROAD MASTER AR
+        <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-500 drop-shadow">
+          โรดมาสเตอร์
         </h1>
-        <p class="text-slate-400 text-xs -mt-2">เกมสแกนสายทางหลบหลุมถนน (แนวตั้ง 1080p)</p>
+        <p class="text-slate-400 text-xs -mt-2">ลงทะเบียนพร้อมดูรายละเอียดสายทางก่อนเริ่มเล่น</p>
 
         <!-- จอลองกล้อง Video Preview Box -->
-        <div class="relative w-64 h-48 bg-slate-950 rounded-2xl border-2 border-yellow-400/50 overflow-hidden shadow-lg flex items-center justify-center my-2">
-          <canvas id="previewCanvas" width="256" height="192" class="w-full h-full object-cover transform -scale-x-100"></canvas>
-          <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/80 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
+        <div class="relative w-64 h-52 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-1">
+          <canvas id="previewCanvas" width="256" height="208" class="w-full h-full object-cover transform -scale-x-100"></canvas>
+          <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2 py-0.5 rounded text-[10px] text-yellow-400 font-medium">
             ⏳ กำลังเชื่อมต่อกล้อง...
           </div>
         </div>
 
         <!-- เลือกอุปกรณ์กล้อง -->
         <div class="w-full max-w-xs text-left">
-          <label class="text-xs text-slate-400 mb-1 block">🎥 เลือกกล้องที่ใช้งาน:</label>
+          <label class="text-xs text-slate-300 mb-1 block">🎥 เลือกกล้องที่ใช้งาน:</label>
           <select id="cameraSelect" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg p-2.5 focus:ring-yellow-400 focus:border-yellow-400">
             <option value="">กำลังค้นหากล้อง...</option>
           </select>
@@ -69,34 +66,34 @@
 
         <!-- ช่องกรอกชื่อ -->
         <div class="w-full max-w-xs text-left">
-          <label class="text-xs text-slate-400 mb-1 block">👤 ชื่อวิศวกร / ผู้เล่น:</label>
-          <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="นายช่างบอย" 
+          <label class="text-xs text-slate-300 mb-1 block">👤 ชื่อผู้เล่น:</label>
+          <input type="text" id="playerNameInput" placeholder="กรอกชื่อผู้เล่น..." value="คุณบอย" 
                  class="w-full bg-slate-800 border border-slate-700 text-yellow-400 font-bold text-sm rounded-lg p-2.5 focus:ring-yellow-400 focus:border-yellow-400 text-center">
         </div>
 
         <!-- ปุ่มถ่ายรูปสแกนหน้า + เริ่มเล่น -->
         <button id="btnStartGame" onclick="confirmAndStartGame()" 
                 class="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-base py-3.5 px-6 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 mt-2">
-          <span>🚀 ลงทะเบียน & เริ่มลุยสายทาง</span>
+          <span>📸 ถ่ายรูปบันทึกหน้า & เริ่มเล่น</span>
         </button>
       </div>
 
       <!-- 2. หน้าสรุปผลหลังเล่นเสร็จ + TOP 10 LEADERBOARD -->
       <div id="gameOverScreen" class="w-full flex flex-col items-center hidden space-y-3 text-center my-auto">
-        <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการสำรวจสายทาง</h2>
+        <h2 class="text-2xl font-black text-red-500 tracking-wide">🏁 สรุปผลการเล่น</h2>
         
-        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3 w-full max-w-xs flex items-center justify-between">
+        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-3 w-full max-w-xs flex items-center justify-between shadow-lg">
           <div class="text-left">
-            <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">วิศวกร: -</div>
+            <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">ผู้เล่น: -</div>
             <div id="resultScore" class="text-xl font-black text-yellow-400">0 คะแนน</div>
           </div>
-          <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900" src="" alt="Player"/>
+          <img id="resultPlayerImg" class="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow" src="" alt="Player"/>
         </div>
 
         <!-- ตาราง TOP 10 LEADERBOARD -->
-        <div class="w-full max-w-xs bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-left">
+        <div class="w-full max-w-xs bg-slate-950/90 border border-slate-800 rounded-xl p-3 text-left shadow-inner">
           <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between">
-            <span>🏆 TOP 10 อันดับสูงสุด</span>
+            <span>🏆 10 อันดับสูงสุด</span>
             <span class="text-[10px] text-slate-500">Supabase DB</span>
           </h3>
           <div id="leaderboardList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs">
@@ -105,7 +102,7 @@
         </div>
 
         <button onclick="resetToSetup()" 
-                class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-xl transition-all active:scale-95">
+                class="w-full max-w-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-xl transition-all active:scale-95 shadow-md">
           🔄 กลับหน้าหลัก / เปลี่ยนผู้เล่น
         </button>
       </div>
@@ -133,16 +130,16 @@
     const gameOverScreen = document.getElementById('gameOverScreen');
 
     // --- GAME STATE & VARIABLES ---
-    let gameState = 'SETUP'; // SETUP, PLAYING, GAMEOVER
+    let gameState = 'SETUP'; 
     let score = 0;
-    let timeLeft = 60;
+    let timeLeft = 60; // ล็อกเวลาตายตัว 60s
     let timerInterval = null;
-    let playerName = 'นายช่างบอย';
+    let playerName = 'คุณบอย';
     let playerPhotoBlob = null;
-    let playerPhotoPublicUrl = null;
+    let playerImageObject = null; // รูปสำหรับเอาไปแปะตัวละคร
 
-    // Lane Settings (4 Lanes Vertical)
-    const laneWidth = 110;
+    // Lane Settings
+    const laneWidth = 100;
     const roadLeftX = (canvasElement.width - (laneWidth * 4)) / 2;
     const laneCenters = [
       roadLeftX + laneWidth * 0.5,
@@ -153,9 +150,13 @@
     let currentLane = 1;
 
     let obstacles = [];
-    let roadSpeed = 8;
+    let roadSpeed = 7;
+    let baseRoadSpeed = 7;
     let roadOffset = 0;
-    let headX = 0.5;
+    
+    // Head Tracking Smoothing Variables
+    let rawHeadX = 0.5;
+    let smoothHeadX = 0.5;
     let currentStream = null;
 
     // --- MEDIAPIPE FACE MESH ---
@@ -208,9 +209,8 @@
         videoElement.srcObject = currentStream;
         await videoElement.play();
         cameraStatusBadge.innerText = "🟢 กล้องพร้อมทำงาน";
-        cameraStatusBadge.className = "absolute top-2 left-2 bg-green-950/80 border border-green-500/50 px-2 py-0.5 rounded text-[10px] text-green-400 font-medium";
+        cameraStatusBadge.className = "absolute top-2 left-2 bg-green-950/90 border border-green-500/50 px-2 py-0.5 rounded text-[10px] text-green-400 font-medium";
         
-        // Loop ประมวลผล MediaPipe
         processVideoFrame();
       } catch (err) {
         cameraStatusBadge.innerText = "❌ ไม่สามารถเปิดกล้องได้";
@@ -229,33 +229,38 @@
     }
 
     function onFaceMeshResults(results) {
-      // หน้าจอ Preview กล้องในขั้นตอนลงทะเบียน
+      // 1. จอลองกล้อง Preview ขั้นตอนลงทะเบียน
       if (gameState === 'SETUP') {
         pCtx.save();
         pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
         pCtx.drawImage(results.image, 0, 0, previewCanvas.width, previewCanvas.height);
         
-        // ถ้าเจอหน้า ให้วาดหมวกจำลองลองสวม
+        // วาดหมวกเซฟตี้สีเหลืองใหญ่ครอบเต็มหัว
         if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
           const nose = results.multiFaceLandmarks[0][1];
           const x = (1.0 - nose.x) * previewCanvas.width;
           const y = nose.y * previewCanvas.height;
-          drawSafetyHelmet(pCtx, x, y - 20, 0.7);
+          drawFullSafetyHelmet(pCtx, x, y - 35, 1.3);
         }
         pCtx.restore();
       }
 
-      // เล่นเกมจริง
+      // 2. คำนวณตำแหน่งหัว แบบมี Smoothing Filter ดักจับนุ่มนวล
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const nose = results.multiFaceLandmarks[0][1];
-        headX = 1.0 - nose.x;
+        rawHeadX = 1.0 - nose.x; // Mirror
 
-        if (headX < 0.38) currentLane = 0;
-        else if (headX < 0.50) currentLane = 1;
-        else if (headX < 0.62) currentLane = 2;
+        // Exponential Moving Average filter (กันเด้งไปเด้งมา)
+        smoothHeadX = smoothHeadX * 0.7 + rawHeadX * 0.3;
+
+        // คำนวณเปลี่ยนเลน
+        if (smoothHeadX < 0.38) currentLane = 0;
+        else if (smoothHeadX < 0.50) currentLane = 1;
+        else if (smoothHeadX < 0.62) currentLane = 2;
         else currentLane = 3;
       }
 
+      // 3. วาดฉากเกม real-time
       if (gameState === 'PLAYING') {
         ctx.save();
         ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -269,29 +274,38 @@
     async function confirmAndStartGame() {
       const inputName = document.getElementById('playerNameInput').value.trim();
       if (!inputName) {
-        alert("กรุณากรอกชื่อวิศวกรผู้เล่น!");
+        alert("กรุณากรอกชื่อผู้เล่น!");
         return;
       }
       playerName = inputName;
 
-      // แคปรูปถ่ายผู้เล่นลง Blob
+      // ถ่ายภาพหน้าผู้เล่นลง Blob + ทำ Image Object
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = 256;
       tempCanvas.height = 256;
       const tCtx = tempCanvas.getContext('2d');
       tCtx.drawImage(videoElement, 0, 0, 256, 256);
+      
       playerPhotoBlob = await new Promise(res => tempCanvas.toBlob(res, 'image/jpeg', 0.85));
+      
+      // โหลดเป็น Image element ไว้เอาไปวาดบนตัวละคร
+      playerImageObject = new Image();
+      playerImageObject.src = URL.createObjectURL(playerPhotoBlob);
 
-      // ซ่อน Overlay เริ่มเล่น
+      // เริ่มเกม
       uiOverlay.classList.add('hidden');
       gameState = 'PLAYING';
       score = 0;
       timeLeft = 60;
+      roadSpeed = baseRoadSpeed;
       obstacles = [];
 
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         timeLeft--;
+        // ยิ่งเวลาน้อยลง ความเร็วถนนจะค่อยๆ เพิ่มขึ้น
+        roadSpeed = baseRoadSpeed + Math.floor((60 - timeLeft) / 10);
+        
         if (timeLeft <= 0) endGame();
       }, 1000);
     }
@@ -304,10 +318,9 @@
       setupScreen.classList.add('hidden');
       gameOverScreen.classList.remove('hidden');
 
-      document.getElementById('resultPlayerName').innerText = `วิศวกร: ${playerName}`;
+      document.getElementById('resultPlayerName').innerText = `ผู้เล่น: ${playerName}`;
       document.getElementById('resultScore').innerText = `${score} คะแนน`;
 
-      // แสดงภาพพรีวิวรูปถ่าย
       if (playerPhotoBlob) {
         document.getElementById('resultPlayerImg').src = URL.createObjectURL(playerPhotoBlob);
       }
@@ -329,7 +342,7 @@
       try {
         let photoUrl = null;
         if (playerPhotoBlob) {
-          const fileName = `inspector_${Date.now()}.jpg`;
+          const fileName = `player_${Date.now()}.jpg`;
           const { error: storageErr } = await supabaseClient
             .storage.from('player-photos').upload(fileName, playerPhotoBlob);
 
@@ -346,7 +359,7 @@
           photo_url: photoUrl
         }]);
 
-        // ดึง TOP 10
+        // ดึง 10 อันดับสูงสุด
         const { data: top10, error: dbErr } = await supabaseClient
           .from('leaderboard')
           .select('*')
@@ -357,12 +370,12 @@
 
         if (top10 && top10.length > 0) {
           listContainer.innerHTML = top10.map((item, idx) => `
-            <div class="flex items-center justify-between bg-slate-900/80 p-1.5 rounded border border-slate-800">
+            <div class="flex items-center justify-between bg-slate-900/90 p-1.5 rounded border border-slate-800">
               <div class="flex items-center gap-2 overflow-hidden">
                 <span class="font-black text-xs ${idx === 0 ? 'text-yellow-400' : (idx === 1 ? 'text-slate-300' : (idx === 2 ? 'text-amber-600' : 'text-slate-500'))}">
                   #${idx + 1}
                 </span>
-                ${item.photo_url ? `<img src="${item.photo_url}" class="w-6 h-6 rounded-full object-cover border border-yellow-500/50 shrink-0"/>` : '<div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700"></div>'}
+                ${item.photo_url ? `<img src="${item.photo_url}" class="w-6 h-6 rounded-full object-cover border border-yellow-500/50 shrink-0"/>` : '<div class="w-6 h-6 rounded-full bg-slate-800"></div>'}
                 <span class="font-medium text-slate-200 text-xs truncate">${item.player_name}</span>
               </div>
               <span class="font-bold text-yellow-400 text-xs ml-1 shrink-0">${item.score} pt</span>
@@ -378,10 +391,14 @@
     // --- GAME ENGINE LOGIC & DRAWING ---
     function updateGameLogic() {
       roadOffset = (roadOffset + roadSpeed) % 60;
+      
+      // คะแนนสะสมระยะทางต่อเนื่อง
+      score += 1;
 
-      if (Math.random() < 0.045) {
+      // สุ่มหลุมและโบนัส (โบนัสโผล่นานๆ ที)
+      if (Math.random() < 0.04) {
         const randomLane = Math.floor(Math.random() * 4);
-        const type = Math.random() > 0.25 ? 'POTHOLE' : 'TIME_BONUS';
+        const type = Math.random() > 0.12 ? 'POTHOLE' : 'BONUS_ITEM'; // โบนัสออกแค่ 12%
         obstacles.push({ lane: randomLane, y: -60, type: type });
       }
 
@@ -392,34 +409,43 @@
         // Collision Check
         if (obs.y > 760 && obs.y < 840 && obs.lane === currentLane) {
           if (obs.type === 'POTHOLE') {
-            score = Math.max(0, score - 50);
-          } else if (obs.type === 'TIME_BONUS') {
-            score += 100;
-            timeLeft += 3;
+            score = Math.max(0, score - 50); // ตกหลุม หัก 50
+          } else if (obs.type === 'BONUS_ITEM') {
+            score += 100; // เก็บถุงปูนโบนัส ได้คะแนน +100
           }
           obstacles.splice(i, 1);
           continue;
         }
 
         if (obs.y > canvasElement.height) {
-          if (obs.type === 'POTHOLE') score += 10;
           obstacles.splice(i, 1);
         }
       }
     }
 
     function drawGameScene() {
-      // 1. ถนนแนวตั้ง 4 เลน
+      // 1. ฉากพื้นหลังข้างทาง (Grass & Trees Side)
+      ctx.fillStyle = "#1e3a1e";
+      ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+      // ต้นไม้เคลื่อนที่ข้างทาง
+      ctx.fillStyle = "#15803d";
+      for(let y = (roadOffset % 80) - 80; y < canvasElement.height; y += 80) {
+        ctx.beginPath(); ctx.arc(30, y, 20, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(canvasElement.width - 30, y, 20, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // 2. ถนนแนวตั้ง 4 เลน
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
-      // เส้นขอบทางเดินสีเหลือง-ดำ สไตล์เขตก่อสร้าง
+      // ขอบทางแถบเหลือง-ดำ สไตล์เขตก่อสร้าง
       ctx.fillStyle = "#facc15";
-      ctx.fillRect(roadLeftX - 10, 0, 10, canvasElement.height);
-      ctx.fillRect(roadLeftX + laneWidth * 4, 0, 10, canvasElement.height);
+      ctx.fillRect(roadLeftX - 12, 0, 12, canvasElement.height);
+      ctx.fillRect(roadLeftX + laneWidth * 4, 0, 12, canvasElement.height);
 
       // เส้นแบ่งเลนถนน
-      ctx.strokeStyle = "#64748b";
+      ctx.strokeStyle = "#94a3b8";
       ctx.lineWidth = 4;
       ctx.setLineDash([30, 30]);
       ctx.lineDashOffset = -roadOffset;
@@ -432,127 +458,143 @@
       }
       ctx.setLineDash([]);
 
-      // 2. วาดอุปสรรค
+      // 3. วาดอุปสรรคหลุม 3D และถุงปูนโบนัส
       obstacles.forEach(obs => {
         const x = laneCenters[obs.lane];
         if (obs.type === 'POTHOLE') {
-          draw3DPothole(x, obs.y);
-        } else if (obs.type === 'TIME_BONUS') {
-          drawGlowTimeBonus(x, obs.y);
+          drawScary3DPothole(x, obs.y);
+        } else if (obs.type === 'BONUS_ITEM') {
+          drawCementBonusItem(x, obs.y);
         }
       });
 
-      // 3. วาดตัวละครผู้เล่น (การ์ตูนนายช่างสวมหมวก AR)
+      // 4. วาดตัวละครผู้เล่น (รูปถ่ายหน้า + หมวกเซฟตี้)
       const playerX = laneCenters[currentLane];
-      const playerY = 810;
-      drawCuteInspector(playerX, playerY);
+      const playerY = 800;
+      drawPlayerWithHelmet(playerX, playerY);
 
-      // 4. HUD คะแนน และ เวลา แบบ Neon Glass Top Floating
-      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
-      ctx.fillRect(20, 20, canvasElement.width - 40, 70);
+      // 5. HUD คะแนน และ เวลา
+      ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+      ctx.fillRect(20, 20, canvasElement.width - 40, 65);
       ctx.strokeStyle = "#facc15";
       ctx.lineWidth = 2;
-      ctx.strokeRect(20, 20, canvasElement.width - 40, 70);
+      ctx.strokeRect(20, 20, canvasElement.width - 40, 65);
 
       ctx.fillStyle = "#facc15";
       ctx.font = "bold 20px Kanit";
       ctx.textAlign = "left";
-      ctx.fillText(`คะแนน: ${score}`, 40, 60);
+      ctx.fillText(`คะแนน: ${score}`, 40, 58);
 
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "right";
-      ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 60);
+      ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
     // --- GRAPHICS DRAWING FUNCTIONS ---
     
-    // วาดหลุมถนน 3D พร้อมรอยแตกร้าว
-    function draw3DPothole(x, y) {
-      // เงาหลุมด้านนอก
-      ctx.fillStyle = "#090d16";
+    // วาดหลุมถนน 3D มิติลึกน่ากลัว + รอยแตกผิวยางพารา
+    function drawScary3DPothole(x, y) {
+      // ขอบล่างหลุมลึก
+      ctx.fillStyle = "#020617";
       ctx.beginPath();
-      ctx.ellipse(x, y + 4, 38, 22, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y + 6, 42, 24, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // ปากหลุมหลัก
-      ctx.fillStyle = "#020617";
+      ctx.fillStyle = "#0f172a";
       ctx.beginPath();
-      ctx.ellipse(x, y, 36, 20, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y, 40, 22, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // ขอบมิติหลุมลึก
-      ctx.strokeStyle = "#475569";
+      // ขอบเหลี่ยมมิติหลุมแตก
+      ctx.strokeStyle = "#ef4444";
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      // รอยแตกหักถนนรอบหลุม (Cracks)
-      ctx.strokeStyle = "#ef4444";
+      // รอยแตกร้าวสายฟ้าลามรอบหลุม (Cracks)
+      ctx.strokeStyle = "#dc2626";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(x - 36, y); ctx.lineTo(x - 48, y - 6);
-      ctx.moveTo(x + 36, y); ctx.lineTo(x + 46, y + 8);
-      ctx.moveTo(x, y - 20); ctx.lineTo(x + 6, y - 30);
+      ctx.moveTo(x - 40, y); ctx.lineTo(x - 55, y - 8);
+      ctx.moveTo(x + 40, y); ctx.lineTo(x + 55, y + 10);
+      ctx.moveTo(x - 10, y - 22); ctx.lineTo(x - 18, y - 35);
+      ctx.moveTo(x + 15, y + 22); ctx.lineTo(x + 25, y + 34);
       ctx.stroke();
     }
 
-    // วาดไอคอนเพิ่มเวลาเรืองแสง (Glowing Clock Icon)
-    function drawGlowTimeBonus(x, y) {
-      // Glow Effect
+    // วาดไอเทมถุงปูนซ่อมทางโบนัส
+    function drawCementBonusItem(x, y) {
       ctx.shadowColor = "#facc15";
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = 12;
 
-      ctx.fillStyle = "#facc15";
+      ctx.fillStyle = "#f59e0b";
       ctx.beginPath();
-      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      ctx.roundRect(x - 20, y - 20, 40, 40, 8);
       ctx.fill();
 
-      ctx.shadowBlur = 0; // reset
+      ctx.shadowBlur = 0;
 
       ctx.fillStyle = "#0f172a";
-      ctx.font = "black 14px Kanit";
+      ctx.font = "bold 12px Kanit";
       ctx.textAlign = "center";
-      ctx.fillText("+3s", x, y + 5);
+      ctx.fillText("ปูนโบนัส", x, y - 2);
+      ctx.fillText("+100", x, y + 12);
     }
 
-    // วาดตัวละครนายช่างน่ารัก (Cute Inspector Mascot)
-    function drawCuteInspector(x, y) {
-      // ร่างกายการ์ตูน
-      ctx.fillStyle = "#2563eb"; // ชุดเสื้อช่างสีน้ำเงิน
+    // วาดรูปหน้าผู้เล่นบนตัวละคร + หมวกเซฟตี้สีเหลือง
+    function drawPlayerWithHelmet(x, y) {
+      ctx.save();
+      
+      // กรอบตัวละคร
+      ctx.fillStyle = "#2563eb";
       ctx.beginPath();
-      ctx.roundRect(x - 22, y - 10, 44, 40, 10);
+      ctx.arc(x, y, 28, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = "#facc15";
+      ctx.lineWidth = 3;
+      ctx.stroke();
 
-      // หัวตัวละคร
-      ctx.fillStyle = "#fde047";
-      ctx.beginPath();
-      ctx.arc(x, y - 20, 18, 0, Math.PI * 2);
-      ctx.fill();
+      // ถ้ามีรูปถ่ายหน้าผู้เล่น ให้แปะรูปหน้าลงตรงกลาง
+      if (playerImageObject && playerImageObject.complete) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(playerImageObject, x - 25, y - 25, 50, 50);
+        ctx.restore();
+      }
 
-      // หมวกเซฟตี้ AR
-      drawSafetyHelmet(ctx, x, y - 28, 1.0);
+      // วาดหมวกเซฟตี้สวมบนหัวตัวละคร
+      drawFullSafetyHelmet(ctx, x, y - 22, 1.0);
+
+      ctx.restore();
     }
 
-    // วาดหมวกเซฟตี้ก่อสร้างสีเหลืองทรงโมเดิร์น
-    function drawSafetyHelmet(targetCtx, x, y, scale = 1.0) {
+    // วาดหมวกเซฟตี้สีเหลืองทรงเต็มศีรษะ
+    function drawFullSafetyHelmet(targetCtx, x, y, scale = 1.0) {
       targetCtx.save();
       targetCtx.translate(x, y);
       targetCtx.scale(scale, scale);
 
-      // โดมหมวก
+      // โดมหมวกหลัก
       targetCtx.fillStyle = "#facc15";
       targetCtx.beginPath();
-      targetCtx.arc(0, 0, 24, Math.PI, 0);
+      targetCtx.arc(0, 0, 26, Math.PI, 0);
       targetCtx.fill();
+
+      // สันหมวกตรงกลาง
+      targetCtx.fillStyle = "#eab308";
+      targetCtx.fillRect(-6, -26, 12, 26);
 
       // ขอบปีกหมวก
-      targetCtx.fillStyle = "#eab308";
+      targetCtx.fillStyle = "#ca8a04";
       targetCtx.beginPath();
-      targetCtx.roundRect(-30, -2, 60, 8, 4);
+      targetCtx.roundRect(-34, -2, 68, 9, 4);
       targetCtx.fill();
 
-      // แถบสะท้อนแสงบนหมวก
+      // แถบสะท้อนแสง
       targetCtx.fillStyle = "#ffffff";
-      targetCtx.fillRect(-8, -18, 16, 5);
+      targetCtx.fillRect(-12, -16, 24, 4);
 
       targetCtx.restore();
     }
