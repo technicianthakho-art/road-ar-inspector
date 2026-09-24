@@ -40,13 +40,12 @@
       🔊
     </button>
 
-    <!-- Overlay UI Screen (ขยายเต็มหน้าจอ 100%) -->
+    <!-- Overlay UI Screen -->
     <div id="uiOverlay" class="absolute inset-0 z-20 flex flex-col justify-between p-5 pt-4 glass-panel transition-all duration-300">
       
-      <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard - เต็มจอชิดขอบบน) -->
+      <!-- SCREEN 1: หน้าแรก (Landing & Top 5 Leaderboard) -->
       <div id="landingScreen" class="w-full h-full flex flex-col justify-between items-center text-center py-2">
         
-        <!-- Header Top Bar -->
         <div class="w-full flex flex-col items-center space-y-1 mt-1">
           <div class="bg-yellow-500/20 border border-yellow-500/40 px-3.5 py-1 rounded-full text-yellow-400 text-xs font-bold tracking-wider">
             กองช่าง องค์การบริหารส่วนตำบลท่าก๊อ
@@ -57,7 +56,6 @@
           <p class="text-slate-400 text-xs">ระบบตรวจสอบและรายงานสภาพสายทางดิจิทัล</p>
         </div>
 
-        <!-- ตาราง TOP 5 LEADERBOARD (ขยายเต็มพื้นที่กลางจอ) -->
         <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-left shadow-2xl space-y-3 my-auto flex-1 flex flex-col justify-center max-h-[500px]">
           <div class="flex items-center justify-between border-b border-slate-800 pb-2">
             <h3 class="text-sm font-bold text-yellow-400 flex items-center gap-1.5">
@@ -66,19 +64,16 @@
             <span id="totalPlayersBadge" class="text-xs text-slate-400 font-medium">ผู้เล่นทั้งหมด 0 คน</span>
           </div>
 
-          <!-- ช่องค้นหาชื่อผู้เล่น -->
           <div class="relative">
             <input type="text" id="searchPlayerInput" oninput="filterLeaderboard()" placeholder="🔍 ค้นหาชื่อผู้เล่น..." 
                    class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl pl-3 pr-8 py-2.5 focus:ring-yellow-400 focus:border-yellow-400">
           </div>
 
-          <!-- รายการตารางคะแนน -->
           <div id="landingLeaderboardList" class="space-y-2 overflow-y-auto pr-1 text-xs flex-1 max-h-[320px]">
             <div class="text-slate-500 italic text-center py-10">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <!-- ปุ่มเริ่มเล่นเกม (ติดขอบล่างเด่นชัด) -->
         <div class="w-full max-w-sm pb-2">
           <button onclick="goToSetupScreen()" 
                   class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-black text-lg py-3.5 px-6 rounded-2xl shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2">
@@ -97,7 +92,6 @@
           <h2 class="text-xl font-bold text-yellow-400">📸 ลงทะเบียน & เช็กกล้อง</h2>
         </div>
 
-        <!-- จอลองกล้อง Preview -->
         <div class="relative w-64 h-48 bg-slate-950 rounded-2xl border-2 border-yellow-400/60 overflow-hidden shadow-2xl flex items-center justify-center my-auto">
           <canvas id="previewCanvas" width="256" height="192" class="w-full h-full object-cover transform -scale-x-100"></canvas>
           <div id="cameraStatusBadge" class="absolute top-2 left-2 bg-slate-900/90 px-2.5 py-1 rounded-md text-xs text-yellow-400 font-medium">
@@ -132,7 +126,7 @@
       </div>
 
 
-      <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver - เต็มจอขยายใหญ่) -->
+      <!-- SCREEN 3: หน้าสรุปผลหลังเล่นเสร็จ (GameOver + Comic Gag Banner) -->
       <div id="gameOverScreen" class="w-full h-full flex flex-col justify-between items-center text-center hidden py-2 relative">
         
         <button onclick="openAdminModal()" class="absolute top-0 right-0 w-8 h-8 opacity-20 hover:opacity-100 flex items-center justify-center text-slate-400 text-xs">
@@ -147,7 +141,7 @@
         </div>
 
         <!-- การ์ดแสดงผลผู้เล่น + รูปถ่ายหน้าจริง -->
-        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 w-full max-w-sm flex items-center justify-between shadow-2xl my-2">
+        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3.5 w-full max-w-sm flex items-center justify-between shadow-2xl my-1">
           <div class="text-left">
             <div id="resultPlayerName" class="font-bold text-slate-200 text-sm">ผู้เล่น: -</div>
             <div id="resultScore" class="text-xl font-black text-yellow-400">0 คะแนน</div>
@@ -155,17 +149,30 @@
           <img id="resultPlayerImg" class="w-14 h-14 rounded-full object-cover border-2 border-yellow-400 bg-slate-900 shadow-md" src="" alt="Player"/>
         </div>
 
+        <!-- 🤣 กิมมิกป้ายเตือนอารมณ์ขัน (COMIC GAG BANNER) -->
+        <div class="w-full max-w-sm bg-amber-500/10 border-2 border-amber-500/50 rounded-2xl p-3 my-1 text-center shadow-lg relative overflow-hidden backdrop-blur-md">
+          <div class="absolute -right-3 -top-3 text-4xl opacity-20 select-none">🤣</div>
+          <div class="flex items-center justify-center gap-1.5 text-yellow-400 font-extrabold text-xs mb-1">
+            <span class="text-base">🤣</span>
+            <span>ปวดคอใช่ไหมล่ะ?!!</span>
+            <span class="text-base">😜</span>
+          </div>
+          <p class="text-[11px] text-amber-200/90 leading-relaxed font-medium">
+            "นี่ถ้าถนนในตำบลท่าก๊อไม่เป็นหลุมเป็นบ่อ... คุณก็ไม่ต้องหลบหลุมจนปวดคอแบบนี้หรอก! 555"
+          </p>
+        </div>
+
         <!-- ตาราง TOP 5 LEADERBOARD สรุป -->
-        <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-left shadow-inner flex-1 flex flex-col justify-center max-h-[400px]">
-          <h3 class="text-xs font-bold text-yellow-400 mb-2 flex items-center justify-between border-b border-slate-800 pb-1.5">
+        <div class="w-full max-w-sm bg-slate-950/90 border border-slate-800 rounded-2xl p-3 text-left shadow-inner flex-1 flex flex-col justify-center max-h-[340px]">
+          <h3 class="text-xs font-bold text-yellow-400 mb-1.5 flex items-center justify-between border-b border-slate-800 pb-1.5">
             <span>🏆 5 อันดับสูงสุดล่าสุด</span>
           </h3>
-          <div id="gameOverLeaderboardList" class="space-y-2 overflow-y-auto pr-1 text-xs flex-1 max-h-[280px]">
-            <div class="text-slate-500 italic text-center py-6">กำลังดึงตารางคะแนน...</div>
+          <div id="gameOverLeaderboardList" class="space-y-1.5 overflow-y-auto pr-1 text-xs flex-1 max-h-[220px]">
+            <div class="text-slate-500 italic text-center py-4">กำลังดึงตารางคะแนน...</div>
           </div>
         </div>
 
-        <div class="w-full max-w-sm pb-2 mt-2">
+        <div class="w-full max-w-sm pb-1 mt-1">
           <button onclick="goToLandingScreen()" 
                   class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-yellow-400 font-bold py-3 rounded-2xl text-xs transition-all active:scale-95 shadow-lg">
             🏠 กลับหน้าหลัก / หน้าตารางคะแนน
@@ -214,18 +221,13 @@
       return audioCtx;
     }
 
-    // ช่วงที่ 1: Mid-Tempo Electro Groove (หน้าแรก / เช็กกล้อง / สรุปผล) - สดใส ไม่หนืด
     const audioBgmLanding = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a70514.mp3?filename=retro-arcade-game-116087.mp3");
-    
-    // ช่วงที่ 2: Upbeat Action Synthwave (ระหว่างเล่นเกม 60s) - บีตเร้าใจ ตื่นเต้น
     const audioBgmGame = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_51a37c56d2.mp3?filename=fast-drum-and-bass-112192.mp3");
     
-    // SFX Effects
     const audioSfxCollect = new Audio("https://cdn.pixabay.com/download/audio/2021/08/09/audio_0e2b4f9821.mp3?filename=coin-collect-retro-8-bit-sound-effect-145251.mp3");
     const audioSfxHit = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2691e8436.mp3?filename=hit-sound-effect-124476.mp3");
     const audioSfxWhistle = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_a0a52d37c8.mp3?filename=whistle-blow-113542.mp3");
 
-    // Audio Preload Configuration
     audioBgmLanding.preload = "auto";
     audioBgmGame.preload = "auto";
     audioBgmLanding.loop = true; audioBgmLanding.volume = 0.35;
@@ -265,7 +267,6 @@
       }
     }
 
-    // Web Audio API Synth Oscillator สำหรับเสียงนับถอยหลัง (ดังชัวร์ 100%)
     function playBeepSound(freq = 880, duration = 0.15, type = 'sine') {
       if (isMuted) return;
       try {
@@ -497,7 +498,7 @@
 
       audioBgmLanding.pause();
       uiOverlay.classList.add('hidden');
-      toggleAudioBtn.classList.add('hidden'); // ซ่อนปุ่มเสียงช่วงเล่นเกม 100%
+      toggleAudioBtn.classList.add('hidden');
 
       gameState = 'COUNTDOWN';
       countdownVal = 5;
@@ -506,7 +507,7 @@
       roadSpeed = baseRoadSpeed;
       obstacles = [];
 
-      playBeepSound(600, 0.15, 'sine'); // เสียงนับถอยหลังครั้งแรก
+      playBeepSound(600, 0.15, 'sine');
 
       if (countdownInterval) clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
@@ -514,7 +515,7 @@
         if (countdownVal > 0) {
           playBeepSound(600, 0.15, 'sine');
         } else {
-          playBeepSound(1200, 0.35, 'square'); // เสียง "ปี้ด!" สัญญาณปล่อยตัว GO!
+          playBeepSound(1200, 0.35, 'square');
           clearInterval(countdownInterval);
           startActualGameplay();
         }
@@ -549,7 +550,7 @@
         audioBgmLanding.play().catch(() => {});
       }
 
-      toggleAudioBtn.classList.remove('hidden'); // แสดงปุ่มเสียงหน้าสรุปผล
+      toggleAudioBtn.classList.remove('hidden');
       uiOverlay.classList.remove('hidden');
       setupScreen.classList.add('hidden');
       gameOverScreen.classList.remove('hidden');
@@ -743,21 +744,16 @@
 
     // --- MODERN 3D GRAPHICS DRAWING ENGINE ---
     function drawGameScene() {
-      // Grass Landscape Background
       ctx.fillStyle = "#142d14";
       ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
 
-      // Modern 3D Roadside Trees (เว้นระยะห่างกว้าง นานๆ โผล่ที ไม่แสบตา)
       drawSparseModern3DTrees();
 
-      // Modern Asphalt Road Body
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(roadLeftX, 0, laneWidth * 4, canvasElement.height);
 
-      // 3D Curb Border
       drawModern3DRoadCurb();
 
-      // Road Lane Lines
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 4;
       ctx.setLineDash([35, 35]);
@@ -771,7 +767,6 @@
       }
       ctx.setLineDash([]);
 
-      // Draw Modern 3D Hazards & Bonus Items
       obstacles.forEach(obs => {
         const x = laneCenters[obs.lane];
         if (obs.type === 'POTHOLE') drawModern3DPothole(x, obs.y);
@@ -782,12 +777,10 @@
         else if (obs.type === 'CEMENT') drawModern3DCementBonus(x, obs.y);
       });
 
-      // Player Avatar
       const playerX = laneCenters[currentLane];
       const playerY = 800;
       drawPlayerWithHelmet(playerX, playerY);
 
-      // HUD Score Glass Panel
       ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
       ctx.fillRect(20, 20, canvasElement.width - 40, 65);
       ctx.strokeStyle = "#facc15";
@@ -804,7 +797,6 @@
       ctx.fillText(`เวลา: ${timeLeft}s`, canvasElement.width - 40, 58);
     }
 
-    // --- ADJUSTED SPARSE TREES (เว้นระยะกว้าง 480px ไม่เวียนหัว) ---
     function drawSparseModern3DTrees() {
       const treeSpacing = 480;
       const startY = ((roadOffset * 0.4) % treeSpacing) - treeSpacing;
